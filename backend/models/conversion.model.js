@@ -15,4 +15,4 @@ const conversionSchema = new mongoose.Schema({
   ],
 });
 
-export default Conversion = mongoose.model("Conversion", conversionSchema);
+export const Conversion = mongoose.model("Conversion", conversionSchema);

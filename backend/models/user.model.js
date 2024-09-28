@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -20,7 +21,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    profilePic: {
+    profilePicture: {
       public_id: String,
       url: String,
       required: true,
@@ -56,4 +57,24 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-export default User = mongoose.model("User", userSchema);
+
+userSchema.pre("save", async function (next) {
+  // checking that password is not modified
+  if (!this.isModified("password")) {
+    next();
+  }
+  // hashing the password
+  this.password = bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+userSchema.methods.getJWTToken = function () {
+  return jwt.sign({ id: this_id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_SECRET_EXPIRES_TIME,
+  });
+};
+export const User = mongoose.model("User", userSchema);
