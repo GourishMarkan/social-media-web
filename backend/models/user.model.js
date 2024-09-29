@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
     profilePicture: {
       public_id: String,
       url: String,
-      required: true,
+      // required: true,
     },
     followers: [
       {
@@ -64,7 +64,7 @@ userSchema.pre("save", async function (next) {
     next();
   }
   // hashing the password
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
@@ -73,7 +73,7 @@ userSchema.methods.comparePassword = async function (password) {
 };
 
 userSchema.methods.getJWTToken = function () {
-  return jwt.sign({ id: this_id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_SECRET_EXPIRES_TIME,
   });
 };
