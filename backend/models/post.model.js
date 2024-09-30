@@ -6,7 +6,8 @@ const postSchema = new mongoose.Schema({
     default: "",
   },
   image: {
-    type: String,
+    public_id: String,
+    url: String,
     required: true,
   },
   author: {
