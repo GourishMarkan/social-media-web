@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import { Post } from "../models/post.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 import { sendJwtToken } from "../utils/jwtToken.js";
@@ -70,6 +71,23 @@ export const login = async (req, res) => {
         message: "Invalid password",
       });
     }
+    // populating the posts-
+    const populatedPosts = await Promise.all(
+      user.posts.map(async (post_id) => {
+        const post = await Post.findById(post_id);
+        return post.author.equals(user._id) ? post : null;
+      })
+    );
+    user = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePicture: user.profilePicture,
+      bio: user.bio,
+      followers: user.followers,
+      following: user.following,
+      posts: populatedPosts,
+    };
     sendJwtToken(user, 200, res, "Login successful");
   } catch (error) {
     console.log(error);

@@ -3,6 +3,7 @@ import {
   addComment,
   bookmarkPost,
   createPost,
+  deletePost,
   dislikePost,
   getCommentsOfPost,
 } from "../controllers/post.controller.js";
@@ -11,16 +12,18 @@ import {
   getAllPosts,
   getMyPosts,
   likePost,
-} from "../controllers/post.controller";
+} from "../controllers/post.controller.js";
+import upload from "../middlewares/multer.js";
 
 const router = express.Router();
 
-router.post("/createPost", verifyJwtToken, createPost);
-router.get("/getAllPosts", verifyJwtToken, getAllPosts);
-router.get("getMyPosts", verifyJwtToken, getMyPosts);
-router.post("/likePost/:id", verifyJwtToken, likePost);
-router.post("/dislikePost/:id", verifyJwtToken, dislikePost);
-router.post("/addComment/:id", verifyJwtToken, addComment);
-router.get("/getComments/:id", verifyJwtToken, getCommentsOfPost);
-router.post("/bookmarkPost/:id", verifyJwtToken, bookmarkPost);
+router.post("/addPost", verifyJwtToken, upload.single("image"), createPost);
+router.get("/allPosts", verifyJwtToken, getAllPosts);
+router.get("userPost/all", verifyJwtToken, getMyPosts);
+router.post("/:id/like", verifyJwtToken, likePost);
+router.post("/:id/dislike", verifyJwtToken, dislikePost);
+router.post("/:id/addComment", verifyJwtToken, addComment);
+router.get("/:id/getComments/", verifyJwtToken, getCommentsOfPost);
+router.post("/:id/bookmark", verifyJwtToken, bookmarkPost);
+router.post("/:id/delete", verifyJwtToken, deletePost);
 export default router;

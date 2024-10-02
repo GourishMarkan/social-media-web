@@ -21,8 +21,12 @@ app.use(cookieParser());
 
 connectDB();
 // routes--
-import userRoutes from "./routes/user.route.js";
-app.use("/api/v1/user", userRoutes);
+import userRouter from "./routes/user.route.js";
+import postRouter from "./routes/post.route.js";
+import messageRouter from "./routes/message.route.js";
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/post", postRouter);
+app.use("/api/v1/message", messageRouter);
 app.listen(port, () => {
   console.log("Server is running on port ", port);
 });
