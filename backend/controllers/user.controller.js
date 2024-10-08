@@ -2,12 +2,12 @@ import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
-import { sendJwtToken } from "../utils/jwtToken.js";
+import { sendToken } from "../utils/jwtToken.js";
 export const register = async (req, res) => {
   const { username, password, email, bio, gender } = req.body;
-  console.log(username, password, email, bio, gender);
+  console.log("", username, password, email, bio, gender);
   const profilePicture = req.file;
-  if (!email || !username || !password || !bio || !gender) {
+  if (!email || !username || !password) {
     return res.status(401).json({
       success: false,
       message: "All fields are required",
@@ -21,24 +21,28 @@ export const register = async (req, res) => {
     });
   }
   let cloudinaryResponse;
-  if (profilePicture) {
-    const fileUri = getDataUri(profilePicture);
-    cloudinaryResponse = await cloudinary.uploader.upload(fileUri);
-    console.log("cloudinary response is ", cloudinaryResponse);
+  if (req.file) {
+    if (profilePicture) {
+      const fileUri = getDataUri(profilePicture);
+      cloudinaryResponse = await cloudinary.uploader.upload(fileUri);
+      console.log("cloudinary response is ", cloudinaryResponse);
+    }
   }
+
   const userData = {
     username,
     email,
     password,
     bio,
-    gender,
+    gender: "male",
     profilePicture: {
-      public_id: cloudinaryResponse.public_id,
-      url: cloudinaryResponse.secure_url,
+      public_id: cloudinaryResponse?.public_id || "",
+      url: cloudinaryResponse?.secure_url || "",
     },
   };
   console.log("user data us ", userData);
   const user = await User.create(userData);
+  console.log("user is ", user);
   if (user) {
     return res.status(201).json({
       success: true,
@@ -51,6 +55,8 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("email and password are in login", email, password);
+    console.log("req.nbidy is ", req.body.email, req.body.password);
     if (!email || !password) {
       return res.status(401).json({
         succes: false,
@@ -88,7 +94,8 @@ export const login = async (req, res) => {
       following: user.following,
       posts: populatedPosts,
     };
-    sendJwtToken(user, 200, res, "Login successful");
+    sendToken(user, 200, res, "Login successful");
+    // const token=
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -107,7 +114,7 @@ export const logout = async (req, res) => {
     httpOnly: true,
     secure: true,
   };
-  res.status(200).clearCookie("token", options).json({
+  res.status(200).clearCookie("token", "", options).json({
     success: true,
     message: "Logged out successfully",
   });

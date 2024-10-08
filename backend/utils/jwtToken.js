@@ -1,5 +1,11 @@
-export const sendJwtToken = (user, statusCode, res, message) => {
-  const token = user.getJWTToken();
+import jwt from "jsonwebtoken";
+export const sendToken = (user, statusCode, res, message) => {
+  // console.log("user in jwt token", user);
+  // console.log("getToekn func", user.getJwtToken());
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+  console.log("token in jwt token", token);
   const options = {
     sameSite: true,
     expires: new Date(

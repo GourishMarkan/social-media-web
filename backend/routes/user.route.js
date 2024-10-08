@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.post("/register", upload.single("profilePicture"), register);
 router.post("/login", login);
-router.post("/logout", logout);
+router.get("/logout", logout);
 router.get("/suggestedUser", verifyJwtToken, getSuggestUsers);
 router.get("/:id/profile", verifyJwtToken, getProfile);
 router.put("/edit-profile", verifyJwtToken, editProfile);
