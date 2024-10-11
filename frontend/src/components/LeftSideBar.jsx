@@ -12,12 +12,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useSelector } from "react-redux";
 const LeftSideBar = () => {
   const navigate = useNavigate();
-  const user = {
-    _id: 1,
-    profilePicture: "https://avatars.githubusercontent.com/u/63723810?v=4",
-  };
+  const { user } = useSelector((store) => store.auth);
   const [open, setOpen] = React.useState(false);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const logoutHandler = async () => {
@@ -80,7 +78,7 @@ const LeftSideBar = () => {
       icons: (
         <Avatar className="w-6 h-6">
           <AvatarImage src={user?.profilePicture} alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarFallback>{user?.username.slice(0, 1) || "CN"}</AvatarFallback>
         </Avatar>
       ),
       text: "Profile",

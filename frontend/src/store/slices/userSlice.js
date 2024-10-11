@@ -1,14 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    user: {},
+    user: null,
     isAuthenticated: false,
     loading: false,
     error: null,
     message: null,
   },
-  reducers: {},
+  reducers: {
+    setAuthUser: (state, action) => {
+      state.user = action.payload;
+    },
+  },
 });
+
+export const { setAuthUser } = userSlice.actions;
+export default userSlice.reducer;

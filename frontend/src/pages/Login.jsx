@@ -7,6 +7,8 @@ import { Button } from "../components/ui/button";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setAuthUser } from "@/store/slices/userSlice";
 const Login = () => {
   const [userDetails, setUserDetails] = React.useState({
     password: "",
@@ -18,7 +20,7 @@ const Login = () => {
     // console.log(process.env.BASE_URL);
     setUserDetails({ ...userDetails, [name]: value });
   };
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   // const BASE_URL = {process.env.REACT_APP_BASE_URL};
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
@@ -42,10 +44,15 @@ const Login = () => {
         withCredentials: true,
       });
       if (res.data.success) {
+        dispatch(setAuthUser(res.data.user));
         console.log(res.data.message);
         toast.success(res.data.message);
         setLoading(false);
         navigate("/");
+        setUserDetails({
+          email: "",
+          password: "",
+        });
       }
     } catch (error) {
       setLoading(false);
