@@ -33,7 +33,7 @@ export const createPost = async (req, res) => {
   console.log("optimized image is ", optimizedImage);
   const fileUri = `data:image/jpeg;base64,${optimizedImage.toString("base64")}`;
 
-  console.log("file uri is ", fileUri);
+  // console.log("file uri is ", fileUri);
 
   const cloudinaryResponse = await cloudinary.uploader.upload(fileUri, {
     folder: "posts",
@@ -238,7 +238,8 @@ export const deletePost = async (req, res) => {
     // deleting the post from cloudinary
     await cloudinary.uploader.destroy(post.image.public_id);
     // deleting the post from the database
-    await post.remove();
+    // await Post.delete(postId);
+    await Post.findByIdAndDelete(postId);
 
     // removing the post from the user's posts array
     const user = await User.findById(user_id);
@@ -253,6 +254,7 @@ export const deletePost = async (req, res) => {
       message: "Post deleted successfully",
     });
   } catch (error) {
+    console.log("error in delete post is", error);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",

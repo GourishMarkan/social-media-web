@@ -75,12 +75,14 @@ const CommentDialog = ({ open, setOpen }) => {
                 <DialogTrigger asChild>
                   <MoreHorizontal className="cursor-pointer" />
                 </DialogTrigger>
-                <div className="flex flex-col items-center text-sm text-ceneter">
-                  <div className="cursor-pointer w-full font-bold text-[#ED4956]">
-                    Unfollow
+                <DialogContent className="flex flex-col items-center text-sm text-center">
+                  <div className="flex flex-col items-center text-sm text-ceneter">
+                    <div className="cursor-pointer w-full font-bold text-[#ED4956]">
+                      Unfollow
+                    </div>
                   </div>
-                </div>
-                <div className="cursor-pointer w-full ">Add to favorites</div>
+                  <div className="cursor-pointer w-full ">Add to favorites</div>
+                </DialogContent>
               </Dialog>
             </div>
             <hr />

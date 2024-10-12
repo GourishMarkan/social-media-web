@@ -7,17 +7,21 @@ import {
   Search,
   TrendingUp,
 } from "lucide-react";
-import React from "react";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser } from "@/store/slices/userSlice";
+import CreatePost from "./CreatePost";
 const LeftSideBar = () => {
   const navigate = useNavigate();
   const { user } = useSelector((store) => store.auth);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const dispatch = useDispatch();
+
   const logoutHandler = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/user/logout`, {
@@ -25,6 +29,7 @@ const LeftSideBar = () => {
       });
       console.log(res);
       if (res.data.success) {
+        dispatch(setAuthUser(null));
         toast.success(res.data.message);
         navigate("/login");
       }
@@ -35,11 +40,14 @@ const LeftSideBar = () => {
   };
 
   const sidebarHandler = (textType) => {
-    if (textType === "Logout") logoutHandler();
+    console.log(textType);
+    if (textType === "Logout") {
+      logoutHandler();
+    }
     // if (textType === "Home") navigate("/");
     // if (textType === "Search") navigate("/search");
     // if (textType === "Explore") navigate("/explore");
-    if (textType === "Create") {
+    else if (textType === "Create") {
       setOpen(true);
     } else if (textType === "Profile") {
       navigate(`/profile/${user?._id}`);
@@ -105,6 +113,7 @@ const LeftSideBar = () => {
           })}
         </div>
       </div>
+      <CreatePost open={open} setOpen={setOpen} />
     </div>
   );
 };
