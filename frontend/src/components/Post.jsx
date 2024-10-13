@@ -19,13 +19,13 @@ import CommentDialog from "./CommentDialog";
 import { setPosts, setSelectedPost } from "@/store/slices/postSlice";
 const Post = ({ post }) => {
   const { user } = useSelector((state) => state.auth);
-  const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
+  const { posts } = useSelector((state) => state.post);
+  const [liked, setLiked] = useState(post?.likes?.includes(user?._id) || false);
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
-  const [postLike, setPostLike] = useState(post.likes.length);
-  const [comment, setComment] = useState(post.comments);
+  const [postLike, setPostLike] = useState(post?.likes?.length || 0);
+  const [comment, setComment] = useState(post?.comments || []);
   const dispatch = useDispatch();
-  const { posts } = useSelector((state) => state.post);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
 
   const deletePostHandler = async () => {
@@ -117,12 +117,12 @@ const Post = ({ post }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar className="mx-1">
-            <AvatarImage src={post.author?.profilePicture} alt="post_image" />
+            <AvatarImage src={post?.author?.profilePicture} alt="post_image" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3 mb-3">
-            <h1>{post.author?.username}</h1>
-            {user?._id === post.author._id && (
+            <h1>{post?.author?.username}</h1>
+            {user?._id === post?.author._id && (
               <Badge variant="secondary">Author</Badge>
             )}
           </div>
@@ -159,7 +159,7 @@ const Post = ({ post }) => {
       <hr />
       <img
         className="rounded-sm my-2 w-full aspect-square object-cover"
-        src={post.image.url}
+        src={post?.image?.url}
         alt="post_image"
       />
       <div className="flex items-center justify-between my-2">
@@ -190,8 +190,8 @@ const Post = ({ post }) => {
       </div>
       <span className="font-medium mb-2">{postLike} likes</span>
       <p>
-        <span className="font-medium mr-2">{post.author?.username}</span>
-        {post.caption}
+        <span className="font-medium mr-2">{post?.author?.username}</span>
+        {post?.caption}
       </p>
       {comment.length > 0 && (
         <span

@@ -37,11 +37,12 @@ const CommentDialog = ({ open, setOpen }) => {
     try {
       const res = await axios.post(
         `${BASE_URL}/post/${selectedPost?._id}/addComment`,
+        { text },
         {
-          withCredentials: true,
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
       if (res.data.success) {
@@ -53,6 +54,7 @@ const CommentDialog = ({ open, setOpen }) => {
             : p;
         });
         dispatch(setPosts(updatedPostData));
+        toast.success(res.data.message);
         setText("");
       }
     } catch (error) {
