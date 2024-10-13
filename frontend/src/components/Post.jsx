@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Avatar } from "./ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-// import { DialogTrigger } from "@radix-ui/react-dialog";
+
 import {
   Badge,
   Bookmark,
@@ -16,15 +16,15 @@ import { Button } from "./ui/button";
 import { toast } from "react-toastify";
 import axios from "axios";
 import CommentDialog from "./CommentDialog";
-import { setPosts } from "@/store/slices/postSlice";
+import { setPosts, setSelectedPost } from "@/store/slices/postSlice";
 const Post = ({ post }) => {
+  const { user } = useSelector((state) => state.auth);
   const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
-  const [postLike, setPostLike] = useState("");
-  const [comment, setComment] = useState("");
+  const [postLike, setPostLike] = useState(post.likes.length);
+  const [comment, setComment] = useState(post.comments);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
   const { posts } = useSelector((state) => state.post);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
 
@@ -49,7 +49,7 @@ const Post = ({ post }) => {
   const likeOrDislikeHandler = async () => {
     try {
       const action = liked ? "dislike" : "like";
-      const res = await axios.post(`${BASE_URL}/post/${post?._id}/${action}`, {
+      const res = await axios.get(`${BASE_URL}/post/${post?._id}/${action}`, {
         withCredentials: true,
       });
       console.log(res.data);
@@ -69,6 +69,34 @@ const Post = ({ post }) => {
             : p
         );
         dispatch(setPosts(updatedePostData));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.res.data.message || "An error occured");
+    }
+  };
+
+  const commentHandler = async () => {
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/post/${post._id}/addComment`,
+        { text },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        const updatedCommentData = [...comment, res.data.comment];
+        setComment(updatedCommentData);
+        const updatedPostData = posts.map((p) =>
+          p._id === post._id ? { ...p, comments: updatedCommentData } : p
+        );
+        // updating the post with the new comment
+        dispatch(setPosts(updatedPostData));
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -137,16 +165,22 @@ const Post = ({ post }) => {
       <div className="flex items-center justify-between my-2">
         <div className="flex items-center gap-3">
           {liked ? (
-            <FaHeart size={"24"} className="cursor-pointer text-red-600" />
+            <FaHeart
+              size={"24"}
+              className="cursor-pointer text-red-600"
+              onClick={likeOrDislikeHandler}
+            />
           ) : (
             <FaRegHeart
               className="cursor-pointer hover:text-gray-600"
               size={"24"}
+              onClick={likeOrDislikeHandler}
             />
           )}
           <MessageCircle
             className="cursor-pointer hover:text-gray-600"
             onClick={() => {
+              dispatch(setSelectedPost(post));
               setOpen(true);
             }}
           />
@@ -163,10 +197,11 @@ const Post = ({ post }) => {
         <span
           className="cursor-pointer text-sm text-gray-400"
           onClick={() => {
+            dispatch(setSelectedPost(post));
             setOpen(true);
           }}
         >
-          View all {comment.length} comments
+          View all {comment.length}
         </span>
       )}
       <CommentDialog open={open} setOpen={setOpen} />
@@ -180,7 +215,7 @@ const Post = ({ post }) => {
         />
         {text && (
           <span
-            // onClick={commentHandler}
+            onClick={commentHandler}
             className="text-[#3BADF8] cursor-pointer"
           >
             Post

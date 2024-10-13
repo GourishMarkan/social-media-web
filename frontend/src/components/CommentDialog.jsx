@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 // import { DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
 import { Link } from "react-router-dom";
@@ -9,14 +9,20 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { setPosts } from "@/store/slices/postSlice";
+import { set } from "zod";
+import Comment from "./Comment";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
+  const { selectedPost, posts } = useSelector((state) => state.post);
   const [comment, setComment] = useState([]);
   const dispatch = useDispatch();
 
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (selectedPost) setComment(selectedPost.comments);
+  }, [selectedPost]);
 
   const changeEventHandler = (e) => {
     const { value } = e.target;
@@ -30,7 +36,7 @@ const CommentDialog = ({ open, setOpen }) => {
   const sendMessageHandler = async () => {
     try {
       const res = await axios.post(
-        `${BASE_URL}/post/${selectedPost?._id}/comment`,
+        `${BASE_URL}/post/${selectedPost?._id}/addComment`,
         {
           withCredentials: true,
           headers: {
@@ -38,6 +44,17 @@ const CommentDialog = ({ open, setOpen }) => {
           },
         }
       );
+      if (res.data.success) {
+        const updatedCommentData = [...comment, res.data.comment];
+        setComment(updatedCommentData);
+        const updatedPostData = posts.map((p) => {
+          p._id === selectedPost._id
+            ? { ...p, comments: updatedCommentData }
+            : p;
+        });
+        dispatch(setPosts(updatedPostData));
+        setText("");
+      }
     } catch (error) {
       console.log(error);
       toast.error(error.res.data.message || "An error occured");
@@ -52,7 +69,7 @@ const CommentDialog = ({ open, setOpen }) => {
         <div className="flex flex-1">
           <div className="w-1/2">
             <img
-              src=""
+              src={selectedPost?.image?.url}
               alt="post_img"
               className="w-full h-full object-cover rounded-l-lg"
             />
@@ -63,12 +80,17 @@ const CommentDialog = ({ open, setOpen }) => {
                 {/* link to my profile */}
                 <Link>
                   <Avatar>
-                    <AvatarImage src="" alt="post_image" />
+                    <AvatarImage
+                      src={selectedPost?.author?.profilePicture?.url}
+                      alt="post_image"
+                    />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </Link>
                 <div className="">
-                  <Link className="font-semibold text-xs">{}username</Link>
+                  <Link className="font-semibold text-xs">
+                    {selectedPost?.author?.username}
+                  </Link>
                 </div>
               </div>
               <Dialog>
@@ -88,7 +110,10 @@ const CommentDialog = ({ open, setOpen }) => {
             <hr />
             <div className="flex-1 overflow-y-auto max-h-96 p-4">
               {/* comments */}
-              {}comments
+              {comment.map((comment) => (
+                <Comment key={comment._id} comment={comment} />
+              ))}
+              comments
             </div>
             <div className="p-4">
               <div className="flex items-center gap-2">

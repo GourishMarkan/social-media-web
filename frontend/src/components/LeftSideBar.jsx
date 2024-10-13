@@ -107,7 +107,7 @@ const LeftSideBar = () => {
                 onClick={() => sidebarHandler(item.text)}
               >
                 {item.icons}
-                <span>{item.text}</span>
+                <span className="hidden md:block">{item.text}</span>
               </div>
             );
           })}
