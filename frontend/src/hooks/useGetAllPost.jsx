@@ -4,7 +4,7 @@ import axios from "axios";
 import { setPosts } from "@/store/slices/postSlice";
 const useGetAllPost = () => {
   const dispatch = useDispatch();
-  const { post } = useSelector((state) => state.post);
+
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   useEffect(() => {
     const fetchAllPost = async () => {
@@ -22,7 +22,7 @@ const useGetAllPost = () => {
       }
     };
     fetchAllPost();
-  }, [post]);
+  }, []);
 };
 
 export default useGetAllPost;

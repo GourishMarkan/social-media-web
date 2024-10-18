@@ -3,13 +3,7 @@ import { Avatar } from "./ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
-import {
-  Badge,
-  Bookmark,
-  MessageCircle,
-  MoreHorizontal,
-  Send,
-} from "lucide-react";
+import { Bookmark, MessageCircle, MoreHorizontal, Send } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { Button } from "./ui/button";
@@ -17,6 +11,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import CommentDialog from "./CommentDialog";
 import { setPosts, setSelectedPost } from "@/store/slices/postSlice";
+import { Badge } from "./ui/badge";
 const Post = ({ post }) => {
   const { user } = useSelector((state) => state.auth);
   const { posts } = useSelector((state) => state.post);
@@ -98,6 +93,7 @@ const Post = ({ post }) => {
         // updating the post with the new comment
         dispatch(setPosts(updatedPostData));
         toast.success(res.data.message);
+        setText("");
       }
     } catch (error) {
       console.log(error);

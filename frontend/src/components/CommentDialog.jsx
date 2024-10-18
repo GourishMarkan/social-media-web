@@ -48,11 +48,11 @@ const CommentDialog = ({ open, setOpen }) => {
       if (res.data.success) {
         const updatedCommentData = [...comment, res.data.comment];
         setComment(updatedCommentData);
-        const updatedPostData = posts.map((p) => {
+        const updatedPostData = posts.map((p) =>
           p._id === selectedPost._id
             ? { ...p, comments: updatedCommentData }
-            : p;
-        });
+            : p
+        );
         dispatch(setPosts(updatedPostData));
         toast.success(res.data.message);
         setText("");

@@ -181,8 +181,8 @@ export const addComment = async (req, res) => {
     });
   }
   const comment = await Comment.create({
-    author: commentUser_id,
     text,
+    author: commentUser_id,
     post: postId,
   });
 
