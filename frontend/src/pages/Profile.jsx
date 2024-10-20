@@ -3,16 +3,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import useGetUserProfile from "@/hooks/useGetUserProfile";
 // import { AvatarFallback } from "@radix-ui/react-avatar";
-import { AtSign } from "lucide-react";
+import { AtSign, Heart, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const Profile = () => {
   const { id } = useParams();
   useGetUserProfile({ id });
   const [activeTab, setActiveTab] = useState("Posts");
   const { userProfile, user } = useSelector((store) => store.auth);
+  console.log(userProfile);
   const isLoggedInUserProfile = user?.id === userProfile?._id;
   const isFollowing = userProfile?.followers?.includes(user?._id) || false; //
   const handleTabChange = (tab) => {
@@ -40,6 +41,14 @@ const Profile = () => {
                 <span>{userProfile?.username}</span>
                 {isLoggedInUserProfile ? (
                   <>
+                    <Link to="/account/edit">
+                      <Button
+                        variant="secondary"
+                        className="hover:bg-gray-200 h-8"
+                      >
+                        Edit profile
+                      </Button>
+                    </Link>
                     <Button variant="secondary" className="h-8">
                       View archive
                     </Button>
@@ -106,9 +115,9 @@ const Profile = () => {
             </span>
             <span
               className={`py-3 cursor-pointer ${
-                activeTab === "posts" ? "font-bold" : " "
+                activeTab === "saved" ? "font-bold" : " "
               }`}
-              onClick={() => handleTabChange("posts")}
+              onClick={() => handleTabChange("saved")}
             >
               SAVED
             </span>
@@ -116,9 +125,32 @@ const Profile = () => {
             <span className="py-3 cursor-pointer">TAGS</span>
           </div>
           <div className="grid grid-cols-3 gap-1">
-            {/* {
-              displayedPost?map()
-            } */}
+            {displayedPost?.map((post) => {
+              return (
+                <div
+                  className="relative shadow-lg mx-4 group cursor-pointer"
+                  key={post?._id}
+                >
+                  <img
+                    src={post?.image?.url}
+                    alt="postImage"
+                    className="rounded-sm my-5 w-full aspect-square object-cover bg-blue-500 left-1 right-1"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="flex items-center text-white space-x-4">
+                      <button className="flex items gap-2 hover:text-gray-300">
+                        <Heart />
+                        <span>{post?.likes.length}</span>
+                      </button>
+                      <button className="flex items gap-2 hover:text-gray-300">
+                        <MessageCircle />
+                        <span>{post?.comments.length}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

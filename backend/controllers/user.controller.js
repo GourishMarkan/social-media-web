@@ -128,7 +128,10 @@ export const getProfile = async (req, res) => {
       message: "User ID is required",
     });
   }
-  const user = await User.findById(id).select("-password");
+  const user = await User.findById(id)
+    .select("-password")
+    .populate({ path: "posts", createdAt: -1 })
+    .populate("bookMarks");
   if (!user) {
     return res.status(404).json({
       success: false,
