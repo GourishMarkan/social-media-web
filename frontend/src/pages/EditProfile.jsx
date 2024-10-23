@@ -12,6 +12,9 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { setAuthUser } from "@/store/slices/userSlice";
 
 const EditProfile = () => {
   const imageRef = useRef();
@@ -19,23 +22,58 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { input, setInput } = useState({
-    profilePhoto: user?.profilePhoto,
-    bio: user?.bio,
-    gender: user?.gender,
+  const [input, setInput] = useState({
+    profilePicture: user?.profilePicture || "",
+    bio: user?.bio || "",
+    gender: user?.gender || "male",
   });
-
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setInput({ ...input, profilePhoto: file });
+      setInput({ ...input, profilePicture: file });
     }
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
+    console.log(input);
   };
-  const editProfileHandler = async () => {};
+  const editProfileHandler = async () => {
+    console.log("input is ", input);
+    const formData = new FormData();
+    formData.append("bio", input.bio);
+    formData.append("gender", input.gender);
+    if (input.profilePicture) {
+      formData.append("profilePicture", input.profilePicture);
+    }
+    try {
+      setLoading(true);
+      console.log("inside try block");
+      const res = await axios.put(`${BASE_URL}/user/edit-profile`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (res.data.success) {
+        const updatedUserData = {
+          ...user,
+          bio: res.data.user?.bio,
+          profilePicture: res.data.user?.profilePicture?.url,
+          gender: res.data.user.gender,
+        };
+        dispatch(setAuthUser(updatedUserData));
+        navigate(`/profile/${user?._id}`);
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.res?.data?.message || "Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex max-w-2xl mx-auto pl-10">
       <section className="flex flex-col gap-6 w-full my-8">
@@ -43,7 +81,7 @@ const EditProfile = () => {
         <div className="flex items-center justify-between bg-gray-100 rounded-xl p-4">
           <div className="flex items-center gap-3">
             <Avatar>
-              <AvatarImage src={user?.profilePhoto?.url} />
+              <AvatarImage src={user?.profilePicture?.url} />
               <AvatarFallback>{user?.username.slice(0, 1)}</AvatarFallback>
             </Avatar>
             <div>
@@ -51,7 +89,7 @@ const EditProfile = () => {
             </div>
           </div>
           <input
-            type="file "
+            type="file"
             ref={imageRef}
             onChange={handleFileChange}
             className="hidden"
@@ -66,7 +104,7 @@ const EditProfile = () => {
         <div>
           <h1 className="font-bold text-xl mb-2">Bio</h1>
           <Textarea
-            value={input.bio}
+            value={input?.bio}
             onChange={handleInputChange}
             name="bio"
             className="focus-visible:ring-transparent"
@@ -74,7 +112,11 @@ const EditProfile = () => {
         </div>
         <div>
           <h1 className="font-bold my-2">Gender</h1>
-          <Select>
+          <Select
+            defaultValue={input?.gender}
+            onValueChange={(value) => setInput({ ...input, gender: value })}
+            // onChange={handleInputChange}
+          >
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>

@@ -11,10 +11,11 @@ import { Link, useParams } from "react-router-dom";
 const Profile = () => {
   const { id } = useParams();
   useGetUserProfile({ id });
-  const [activeTab, setActiveTab] = useState("Posts");
+  const [activeTab, setActiveTab] = useState("posts");
   const { userProfile, user } = useSelector((store) => store.auth);
   console.log(userProfile);
-  const isLoggedInUserProfile = user?.id === userProfile?._id;
+  const isLoggedInUserProfile = user?._id === userProfile?._id;
+  console.log(isLoggedInUserProfile);
   const isFollowing = userProfile?.followers?.includes(user?._id) || false; //
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -29,7 +30,7 @@ const Profile = () => {
           <section className="flex items-center justify-center">
             <Avatar className="h-32 w-32 bg-blue-500">
               <AvatarImage
-                src={userProfile?.profilePicture.url}
+                src={userProfile?.profilePicture?.url}
                 alt="profilePicture"
               />
               <AvatarFallback>CN</AvatarFallback>

@@ -36,8 +36,8 @@ export const register = async (req, res) => {
     bio,
     gender: "male",
     profilePicture: {
-      public_id: cloudinaryResponse?.public_id || "",
-      url: cloudinaryResponse?.secure_url || "",
+      public_id: cloudinaryResponse?.public_id,
+      url: cloudinaryResponse?.secure_url,
     },
   };
   console.log("user data us ", userData);
@@ -147,8 +147,9 @@ export const getProfile = async (req, res) => {
 export const editProfile = async (req, res) => {
   try {
     const id = req.user_id;
-    const { bio, gender, username, email } = req.body;
-    console.log(username);
+    const { bio, gender } = req.body;
+    // console.log(username);
+    console.log("update profile details coming is ", bio, gender, req.file);
     const profilePicture = req.file;
     let cloudinaryResponse;
     const user = await User.findById(id).select("-password");
@@ -159,27 +160,30 @@ export const editProfile = async (req, res) => {
       });
     }
     if (profilePicture) {
-      const fileUri = getDataUri(profilePic);
+      const fileUri = getDataUri(profilePicture);
       cloudinaryResponse = await cloudinary.uploader.upload(fileUri);
+      console.log("cloudinary response is ", cloudinaryResponse);
       if (!cloudinaryResponse) {
         return res.status(500).json({
           success: false,
           message: "failed to update profile picture",
         });
       }
-      await cloudinary.uploader.destroy(user.profilePicture.public_id);
+      // await cloudinary.uploader.destroy(user.profilePicture.public_id);
     }
     if (bio) user.bio = bio;
     if (gender) user.gender = gender;
-    if (username) user.username = username;
-    if (email) user.email = email;
+    // if (username) user.username = username;
+    // if (email) user.email = email;
     if (profilePicture) {
       user.profilePicture = {
         public_id: cloudinaryResponse.public_id,
         url: cloudinaryResponse.secure_url,
       };
     }
+    console.log("user is ", user.profilePicture);
     await user.save();
+    console.log("user is ", user);
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully",

@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { Select } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Button } from "../components/ui/button";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { SelectItem } from "@radix-ui/react-select";
 const Signup = () => {
   const [userDetails, setUserDetails] = useState({
     username: "",
@@ -28,7 +34,7 @@ const Signup = () => {
     setUserDetails({ ...userDetails, profilePicture: file });
   };
   const navigate = useNavigate();
-
+  const imageRef = useRef();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,12 +127,37 @@ const Signup = () => {
           />
         </div>
         {/* gender optional */}
-        {/* <div className="">
+        <div className="">
           <Label className="font-meduim" name="gender">
             gender
           </Label>
-          <Select value={userDetails.gender}></Select>
-        </div> */}
+          <Select
+            defaultValue={userDetails.gender}
+            onValueChange={(value) =>
+              setUserDetails({ ...userDetails, gender: value })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="male">Male</SelectItem>
+              <SelectItem value="female">Female</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className=" flex flex-col">
+          <Label htmlFor="profilePicture" className="font-meduim">
+            ProfilePic
+          </Label>
+          <input
+            ref={imageRef}
+            className="hidden"
+            type="file"
+            onChange={handleFileChange}
+          />
+          <Button onClick={() => imageRef?.current.click()}>Upload</Button>
+        </div>
         {loading ? (
           <Button>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

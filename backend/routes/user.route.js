@@ -19,7 +19,12 @@ router.post("/login", login);
 router.get("/logout", logout);
 router.get("/suggestedUser", verifyJwtToken, getSuggestUsers);
 router.get("/:id/profile", verifyJwtToken, getProfile);
-router.put("/edit-profile", verifyJwtToken, editProfile);
+router.put(
+  "/edit-profile",
+  verifyJwtToken,
+  upload.single("profilePicture"),
+  editProfile
+);
 router.post("/followOrUnfollow/:id", verifyJwtToken, followorUnfollowUser);
 router.get("/myFollowers", verifyJwtToken, getMyFollowers);
 router.get("/myFollowing", verifyJwtToken, getMyFollowing);
