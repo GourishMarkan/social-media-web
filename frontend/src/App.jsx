@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -13,6 +13,9 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import ChatPage from "./pages/ChatPage";
+import { useDispatch, useSelector } from "react-redux";
+import { io } from "socket.io-client";
+import { setSocket } from "./store/slices/socketSlice";
 // import { Toast } from "react-toastify/dist/components";
 const router = createBrowserRouter([
   {
@@ -47,6 +50,20 @@ const router = createBrowserRouter([
   },
 ]);
 function App() {
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  useEffect(() => {
+    if (user) {
+      const socketio = io(`${BASE_URL}`, {
+        query: {
+          userId: user?._id,
+        },
+        transports: ["websocket"],
+      });
+      dispatch(setSocket(socketio));
+    }
+  }, [user, dispatch]);
   return (
     <>
       {/* <Signup />
