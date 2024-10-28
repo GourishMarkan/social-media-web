@@ -5,15 +5,17 @@ import { Textarea } from "../components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectTrigger,
   SelectValue,
+  SelectItem,
 } from "../components/ui/select";
 import { Button } from "../components/ui/button";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { SelectItem } from "@radix-ui/react-select";
+
 const Signup = () => {
   const [userDetails, setUserDetails] = useState({
     username: "",
@@ -30,8 +32,11 @@ const Signup = () => {
     setUserDetails({ ...userDetails, [name]: value });
   };
   const handleFileChange = (e) => {
-    const { file } = e.target;
+    const file = e.target.files?.[0];
     setUserDetails({ ...userDetails, profilePicture: file });
+  };
+  const selectChangeHandlet = (value) => {
+    setUserDetails({ ...userDetails, gender: value });
   };
   const navigate = useNavigate();
   const imageRef = useRef();
@@ -68,9 +73,9 @@ const Signup = () => {
   };
   return (
     <div className="flex items-center justify-center h-screen w-screen bg-gradient-to-l from-slate-500 to-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        action=""
+      <div
+        // onSubmit={handleSubmit}
+        // action=""
         className="shadow-2xl flex flex-col gap-5 p-8 bg-slate-100"
       >
         <div className="my-4">
@@ -126,27 +131,7 @@ const Signup = () => {
             className="focus-visible:ring-transparent my-2"
           />
         </div>
-        {/* gender optional */}
-        <div className="">
-          <Label className="font-meduim" name="gender">
-            gender
-          </Label>
-          <Select
-            defaultValue={userDetails.gender}
-            onValueChange={(value) =>
-              setUserDetails({ ...userDetails, gender: value })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="male">Male</SelectItem>
-              <SelectItem value="female">Female</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className=" flex flex-col">
+        <div className=" flex flex-col mb-1">
           <Label htmlFor="profilePicture" className="font-meduim">
             ProfilePic
           </Label>
@@ -156,15 +141,40 @@ const Signup = () => {
             type="file"
             onChange={handleFileChange}
           />
-          <Button onClick={() => imageRef?.current.click()}>Upload</Button>
+          <Button onClick={() => imageRef?.current.click()} variant="secondary">
+            Upload Picture
+          </Button>
         </div>
+        {/* gender optional */}
+        <div className="">
+          <Label className="font-meduim" name="gender">
+            gender
+          </Label>
+          <Select
+            defaultValue={userDetails.gender}
+            onValueChange={selectChangeHandlet}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
         {loading ? (
           <Button>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Please wait
           </Button>
         ) : (
-          <Button type="submit">Signup</Button>
+          <Button type="submit" onClick={handleSubmit}>
+            Signup
+          </Button>
         )}
 
         <span className="text-center">
@@ -173,7 +183,7 @@ const Signup = () => {
             Login
           </Link>
         </span>
-      </form>
+      </div>
     </div>
   );
 };

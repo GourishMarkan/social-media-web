@@ -34,7 +34,7 @@ export const register = async (req, res) => {
     email,
     password,
     bio,
-    gender: "male",
+    gender,
     profilePicture: {
       public_id: cloudinaryResponse?.public_id,
       url: cloudinaryResponse?.secure_url,

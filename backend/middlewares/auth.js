@@ -2,9 +2,9 @@ import jwt from "jsonwebtoken";
 // import { User } from "../models/user.model.js";
 
 export const verifyJwtToken = async (req, res, next) => {
-  console.log("cookies are ", req.cookies);
+  // console.log("cookies are ", req.cookies);
   const { token } = req.cookies;
-  console.log("token is", token);
+  // console.log("token is", token);
   if (!token) {
     return res.status(401).json({
       success: false,

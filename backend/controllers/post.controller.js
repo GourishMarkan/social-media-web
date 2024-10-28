@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import { Comment } from "../models/comment.model.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 export const createPost = async (req, res) => {
   const { caption } = req.body;
@@ -139,6 +140,23 @@ export const likePost = async (req, res) => {
   await post.updateOne({ $addToSet: { likes: likedUser_id } });
 
   //TODO: implementing the notification through socket.io
+  const user = await User.findById(likedUser_id).populate(
+    "username profilePicture"
+  );
+
+  const postOwnerId = post.author.toString();
+  if (postOwnerId !== likeKrneWalaUserKiId) {
+    // emit a notification event
+    const notification = {
+      type: "like",
+      userId: likedUser_id,
+      userDetails: user,
+      postId,
+      message: "Your post was liked",
+    };
+    const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+    io.to(postOwnerSocketId).emit("notification", notification);
+  }
   return res.status(200).json({
     success: true,
     message: "Post liked",
@@ -156,7 +174,24 @@ export const dislikePost = async (req, res) => {
     });
   }
   await post.updateOne({ $pull: { likes: dislikedUser_id } });
+  await post.save();
   // TODO: implementing the notification through socket.io
+  const user = await User.findById(dislikedUser_id).populate(
+    "username profilePicture"
+  );
+  const postOwnerId = post.author.toString();
+  if (postOwnerId != dislikedUser_id) {
+    const notification = {
+      type: "dislike",
+      userId: dislikedUser_id,
+      postId,
+      userDetails: user,
+      message: "Your post was disliked",
+    };
+    const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+    io.to(postOwnerSocketId).emit("notification", notification);
+  }
+
   return res.status(200).json({
     success: true,
     message: "Post disliked",

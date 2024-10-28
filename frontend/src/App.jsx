@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect } from "react";
+
 import "./App.css";
 import Signup from "./pages/Signup";
 // import { ToastContainer } from "react-toastify";
@@ -16,6 +15,7 @@ import ChatPage from "./pages/ChatPage";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { setSocket } from "./store/slices/socketSlice";
+import { setOnlineUsers } from "./store/slices/chatSlice";
 // import { Toast } from "react-toastify/dist/components";
 const router = createBrowserRouter([
   {
@@ -51,8 +51,9 @@ const router = createBrowserRouter([
 ]);
 function App() {
   const { user } = useSelector((state) => state.auth);
+  const { socket } = useSelector((state) => state.socketio);
   const dispatch = useDispatch();
-  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BACKEND_BASE_URL;
   useEffect(() => {
     if (user) {
       const socketio = io(`${BASE_URL}`, {
@@ -61,7 +62,20 @@ function App() {
         },
         transports: ["websocket"],
       });
+      console.log("socketio", socketio);
       dispatch(setSocket(socketio));
+
+      socketio.on("getOnlineUsers", (onlineUsers) => {
+        dispatch(setOnlineUsers(onlineUsers));
+      });
+
+      return () => {
+        socketio.close();
+        dispatch(setSocket(null));
+      };
+    } else if (socket) {
+      socket.close();
+      dispatch(setSocket(null));
     }
   }, [user, dispatch]);
   return (

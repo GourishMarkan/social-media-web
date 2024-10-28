@@ -4,6 +4,7 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import postSlice from "./slices/postSlice";
 import socketSlice from "./slices/socketSlice";
+import chatSlice from "./slices/chatSlice";
 const persistConfig = {
   key: "root",
   version: 1,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   auth: userSlice,
   post: postSlice,
   socketio: socketSlice,
+  chat: chatSlice,
 });
 // creating a persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);

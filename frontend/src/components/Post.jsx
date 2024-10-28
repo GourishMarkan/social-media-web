@@ -113,12 +113,15 @@ const Post = ({ post }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar className="mx-1">
-            <AvatarImage src={post?.author?.profilePicture} alt="post_image" />
+            <AvatarImage
+              src={post?.author?.profilePicture?.url}
+              alt="post_image"
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3 mb-3">
             <h1>{post?.author?.username}</h1>
-            {user?._id === post?.author._id && (
+            {user?._id === post?.author?._id && (
               <Badge variant="secondary">Author</Badge>
             )}
           </div>
