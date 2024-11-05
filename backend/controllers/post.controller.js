@@ -145,7 +145,7 @@ export const likePost = async (req, res) => {
   );
 
   const postOwnerId = post.author.toString();
-  if (postOwnerId !== likeKrneWalaUserKiId) {
+  if (postOwnerId !== likedUser_id) {
     // emit a notification event
     const notification = {
       type: "like",

@@ -17,11 +17,11 @@ const ChatPage = () => {
     (state) => state.auth
   );
   const { onlineUsers, messages } = useSelector((state) => state.chat);
-  console.log(
-    "selected user is and online users are ",
-    selectedUser,
-    onlineUsers
-  );
+  // console.log(
+  //   "selected user is and online users are ",
+  //   selectedUser,
+  //   onlineUsers
+  // );
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const sendMessageHandler = async (receiverId) => {

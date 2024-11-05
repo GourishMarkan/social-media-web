@@ -4,6 +4,7 @@ import { getReceiverSocketId, io } from "../socket/socket.js";
 
 export const sendMessage = async (req, res) => {
   try {
+    // console.log(req.id);
     const senderId = req.user_id;
     const receiverId = req.params.id;
     const { message } = req.body;
@@ -19,6 +20,7 @@ export const sendMessage = async (req, res) => {
     });
     // if conversation does not exist creating one
     if (!conversation) {
+      console.log("Creating new conversation");
       conversation = await Conversion.create({
         participants: [senderId, receiverId],
       });
@@ -53,11 +55,14 @@ export const sendMessage = async (req, res) => {
 export const getMessages = async (req, res) => {
   try {
     const senderId = req.user_id;
-    const receiverId = req.params.receiverId;
+
+    const receiverId = req.params.id;
+    console.log("senderId", senderId, "receiverId", receiverId);
     // finding the conversation
     const conversation = await Conversion.findOne({
       participants: { $all: [senderId, receiverId] },
     }).populate("messages");
+    console.log(conversation);
     if (!conversation)
       return res.status(200).json({ success: true, messages: [] });
     return res.status(200).json({
