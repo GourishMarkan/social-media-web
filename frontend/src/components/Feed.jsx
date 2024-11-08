@@ -1,6 +1,6 @@
 // import React from "react";
 // import Post from "./Post";
-import Posts from "./posts";
+import Posts from "./Posts";
 
 const Feed = () => {
   return (
