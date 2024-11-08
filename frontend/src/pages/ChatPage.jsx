@@ -22,6 +22,9 @@ const ChatPage = () => {
   //   selectedUser,
   //   onlineUsers
   // );
+  const { messageNotification } = useSelector(
+    (state) => state.realTimeNotifications
+  );
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const sendMessageHandler = async (receiverId) => {

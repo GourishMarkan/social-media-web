@@ -15,19 +15,42 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/store/slices/userSlice";
 import CreatePost from "./CreatePost";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+// import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { Button } from "./ui/button";
+import { clearLikeNotifications } from "../store/slices/rtnSlice";
 const LeftSideBar = () => {
   const navigate = useNavigate();
   const { user } = useSelector((store) => store.auth);
+  const { likeNotifications, messageNotifications } = useSelector(
+    (state) => state.realTimeNotifications
+  );
+  // console.log("likeNotifications", likeNotifications);
+  // console.log("clearLIkeNotifications", clearLikeNotifications);
+  console.log("messageNotifications", messageNotifications);
   const [open, setOpen] = useState(false);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const dispatch = useDispatch();
-
+  const [isPopOverOpen, setPopOverOpen] = useState(false);
+  console.log("isPopOverOpen", isPopOverOpen);
+  const handlePopOverOpenChange = (open) => {
+    console.log(open);
+    setPopOverOpen(open);
+    if (open) {
+      console.log("popover is open");
+      clearNotifications();
+    }
+  };
+  const clearNotifications = () => {
+    console.log("clearing notifications");
+    dispatch(clearLikeNotifications());
+  };
   const logoutHandler = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/user/logout`, {
-        withCreditionals: true,
+        withCredentials: true,
       });
-      console.log(res);
+      // console.log(res);
       if (res.data.success) {
         dispatch(setAuthUser(null));
         toast.success(res.data.message);
@@ -108,6 +131,55 @@ const LeftSideBar = () => {
               >
                 {item.icons}
                 <span className="hidden md:block">{item.text}</span>
+                {item.text === "Notifications" &&
+                  likeNotifications?.length > 0 && (
+                    <Popover onOpenChange={handlePopOverOpenChange}>
+                      <PopoverTrigger>
+                        <Button
+                          size="icon"
+                          className="rounded-full h-5 w-5 bg-red-600 hover:bg--red-700 absolute bottom-6 left-6"
+                        >
+                          {likeNotifications.length}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div>
+                          {likeNotifications?.length === 0 ? (
+                            <p>No new notification </p>
+                          ) : (
+                            likeNotifications.map((notification, index) => {
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex items-center gap-2 my-2"
+                                >
+                                  <Avatar>
+                                    <AvatarImage
+                                      src={
+                                        notification?.userDetails
+                                          ?.profilePicture?.url
+                                      }
+                                    />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                  </Avatar>
+                                  <p className="text-sm">
+                                    <span className="text-bold">
+                                      {notification?.userDetails?.username}
+                                    </span>
+                                    liked your post
+                                  </p>
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                {item.text === "Messages" &&
+                  messageNotifications?.length > 0 && (
+                    <Button type="icon">{messageNotifications?.length}</Button>
+                  )}
               </div>
             );
           })}

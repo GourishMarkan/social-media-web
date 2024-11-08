@@ -10,7 +10,7 @@ import { Button } from "./ui/button";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { setPosts } from "@/store/slices/postSlice";
-import { set } from "zod";
+// import { set } from "zod";
 import Comment from "./Comment";
 
 const CommentDialog = ({ open, setOpen }) => {

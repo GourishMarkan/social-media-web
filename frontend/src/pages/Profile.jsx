@@ -22,7 +22,7 @@ const Profile = () => {
   };
 
   const displayedPost =
-    activeTab === "posts" ? userProfile?.posts : userProfile?.bookmarks;
+    activeTab === "posts" ? userProfile?.posts : userProfile?.bookMarks;
   return (
     <div className="flex max-w-5xl justify-center mx-auto pl-10">
       <div className="flex flex-col gap-20 p-8">

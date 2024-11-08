@@ -32,11 +32,20 @@ export const sendMessage = async (req, res) => {
       conversation.messages.push(newMessage._id);
     }
     await Promise.all([conversation.save(), newMessage.save()]);
-
+    // const sender = await User.findById(senderId).select(
+    //   "username profilePicture"
+    // );
+    // const notification = {
+    //   type: "message",
+    //   userId: receiverId,
+    //   userDetails: sender,
+    //   message: "You have a new message",
+    // };
     // implementing  socket io for real time data transfer
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
+      // io.to(receiverSocketId).emit("notification", notification);
     }
     return res.status(201).json({
       success: true,
@@ -44,6 +53,7 @@ export const sendMessage = async (req, res) => {
       newMessage,
     });
   } catch (error) {
+    console.log("error in sending message:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

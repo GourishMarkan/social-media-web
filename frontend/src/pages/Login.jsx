@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -7,7 +7,7 @@ import { Button } from "../components/ui/button";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/store/slices/userSlice";
 const Login = () => {
   const [userDetails, setUserDetails] = React.useState({
@@ -22,6 +22,12 @@ const Login = () => {
   };
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
   // const BASE_URL = {process.env.REACT_APP_BASE_URL};
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const handleSubmit = async (e) => {
@@ -33,6 +39,7 @@ const Login = () => {
     formData.append("password", userDetails.password);
 
     console.log(formData);
+
     // setLoading(true);
     try {
       setLoading(true);

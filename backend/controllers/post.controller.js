@@ -325,6 +325,10 @@ export const bookmarkPost = async (req, res) => {
       // user.bookMarks.push(postId);
       await user.updateOne({ $push: { bookMarks: postId } });
       await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "Post added to bookmark",
+      });
     }
   } catch (error) {
     return res.status(500).json({

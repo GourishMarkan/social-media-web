@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
@@ -15,6 +15,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const Signup = () => {
   const [userDetails, setUserDetails] = useState({
@@ -71,6 +72,12 @@ const Signup = () => {
       setLoading(false);
     }
   };
+  const { user } = useSelector((state) => state.auth);
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
   return (
     <div className="flex items-center justify-center h-screen w-screen bg-gradient-to-l from-slate-500 to-gray-100">
       <div

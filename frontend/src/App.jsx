@@ -16,27 +16,53 @@ import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { setSocket } from "./store/slices/socketSlice";
 import { setOnlineUsers } from "./store/slices/chatSlice";
+import {
+  setLikeNotifications,
+  setMessageNotifications,
+} from "./store/slices/rtnSlice";
+import ProtectedRoute from "./components/ProtectedRoute";
 // import { Toast } from "react-toastify/dist/components";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />,
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/profile/:id",
-        element: <Profile />,
+        element: (
+          <ProtectedRoute>
+            <Profile />,
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/account/edit",
-        element: <EditProfile />,
+
+        element: (
+          <ProtectedRoute>
+            <EditProfile />,
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/chat",
-        element: <ChatPage />,
+        element: (
+          <ProtectedRoute>
+            <ChatPage />,
+          </ProtectedRoute>
+        ),
       },
     ],
   },
@@ -69,6 +95,13 @@ function App() {
         dispatch(setOnlineUsers(onlineUsers));
       });
 
+      socketio.on("notification", (notification) => {
+        dispatch(setLikeNotifications(notification));
+        dispatch(setMessageNotifications(notification));
+      });
+      // socketio.on("message", (message) => {
+      //   dispatch(setMessageNotifications(message));
+      // });
       return () => {
         socketio.close();
         dispatch(setSocket(null));

@@ -23,6 +23,6 @@ router.get("/:id/like", verifyJwtToken, likePost);
 router.get("/:id/dislike", verifyJwtToken, dislikePost);
 router.post("/:id/addComment", verifyJwtToken, addComment);
 router.get("/:id/getComments/", verifyJwtToken, getCommentsOfPost);
-router.post("/:id/bookmark", verifyJwtToken, bookmarkPost);
+router.get("/:id/bookmark", verifyJwtToken, bookmarkPost);
 router.delete("/delete/:id", verifyJwtToken, deletePost);
 export default router;
