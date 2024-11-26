@@ -1,21 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Textarea } from "../components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-} from "../components/ui/select";
-import { Button } from "../components/ui/button";
+
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate, Link } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+// import { Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
+import StepOne from "@/components/StepOne";
+import Step2 from "@/components/Step2";
 
 const Signup = () => {
   const [userDetails, setUserDetails] = useState({
@@ -26,6 +17,7 @@ const Signup = () => {
     gender: "",
     profilePicture: "",
   });
+  const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +28,7 @@ const Signup = () => {
     const file = e.target.files?.[0];
     setUserDetails({ ...userDetails, profilePicture: file });
   };
-  const selectChangeHandlet = (value) => {
+  const selectChangeHandler = (value) => {
     setUserDetails({ ...userDetails, gender: value });
   };
   const navigate = useNavigate();
@@ -78,120 +70,50 @@ const Signup = () => {
       navigate("/");
     }
   }, []);
+  const nextStep = () => {
+    if (currentStep == 1) {
+      if (
+        userDetails.username == "" ||
+        userDetails.password == "" ||
+        userDetails.email == ""
+      ) {
+        toast.error("Please fill all fields");
+        return;
+      }
+      setCurrentStep(currentStep + 1);
+    }
+  };
+  const prevStep = () => {
+    setCurrentStep(currentStep - 1);
+  };
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <StepOne
+            nextStep={nextStep}
+            userDetails={userDetails}
+            handleInputChange={handleInputChange}
+          />
+        );
+      case 2:
+        return (
+          <Step2
+            nextStep={nextStep}
+            prevStep={prevStep}
+            userDetails={userDetails}
+            handleInputChange={handleInputChange}
+            selectChangeHandler={selectChangeHandler}
+            loading={loading}
+            handleFileChange={handleFileChange}
+            handleSubmit={handleSubmit}
+          />
+        );
+    }
+  };
   return (
-    <div className="flex items-center justify-center h-screen w-screen bg-gradient-to-l from-slate-500 to-gray-100">
-      <div
-        // onSubmit={handleSubmit}
-        // action=""
-        className="shadow-2xl flex flex-col gap-5 p-8 bg-slate-100"
-      >
-        <div className="my-4">
-          <h1 className="text-center font-bold text-xl">LOGO</h1>
-          <p className="text-sm text-center">
-            Signup to see photos & videos from your friends
-          </p>
-        </div>
-        <div className="">
-          <Label className="font-meduim" name="username">
-            Username
-          </Label>
-          <Input
-            type="text"
-            name="username"
-            value={userDetails.username}
-            onChange={handleInputChange}
-            className="focus-visible:ring-transparent my-2"
-          />
-        </div>
-        <div className="">
-          <Label className="font-meduim" name="password">
-            password
-          </Label>
-          <Input
-            type="password"
-            name="password"
-            value={userDetails.password}
-            onChange={handleInputChange}
-            className="focus-visible:ring-transparent my-2"
-          />
-        </div>
-        <div className="">
-          <Label className="font-meduim" name="email">
-            email
-          </Label>
-          <Input
-            type="email"
-            name="email"
-            value={userDetails.email}
-            onChange={handleInputChange}
-            className="focus-visible:ring-transparent my-2"
-          />
-        </div>
-        <div className="">
-          <Label className="font-meduim" name="bio">
-            bio
-          </Label>
-          <Textarea
-            name="bio"
-            value={userDetails.bio}
-            onChange={handleInputChange}
-            className="focus-visible:ring-transparent my-2"
-          />
-        </div>
-        <div className=" flex flex-col mb-1">
-          <Label htmlFor="profilePicture" className="font-meduim">
-            ProfilePic
-          </Label>
-          <input
-            ref={imageRef}
-            className="hidden"
-            type="file"
-            onChange={handleFileChange}
-          />
-          <Button onClick={() => imageRef?.current.click()} variant="secondary">
-            Upload Picture
-          </Button>
-        </div>
-        {/* gender optional */}
-        <div className="">
-          <Label className="font-meduim" name="gender">
-            gender
-          </Label>
-          <Select
-            defaultValue={userDetails.gender}
-            onValueChange={selectChangeHandlet}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {loading ? (
-          <Button>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Please wait
-          </Button>
-        ) : (
-          <Button type="submit" onClick={handleSubmit}>
-            Signup
-          </Button>
-        )}
-
-        <span className="text-center">
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-600">
-            Login
-          </Link>
-        </span>
-      </div>
-    </div>
+    <div>{renderStep()}</div>
+    
   );
 };
 
