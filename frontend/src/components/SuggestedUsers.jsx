@@ -5,6 +5,8 @@ import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 const SuggestedUsers = () => {
   const { suggestedUsers } = useSelector((state) => state.auth);
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const followOrUnfollowUser=as
   return (
     <div className="my-10">
       <div className="flex items-center justify-between text-sm">

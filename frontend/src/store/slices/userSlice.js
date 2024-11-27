@@ -8,6 +8,8 @@ const userSlice = createSlice({
     loading: false,
     error: null,
     message: null,
+    followers: [],
+    following: [],
     suggestedUsers: [],
     userProfile: null,
     selectedUser: null,
@@ -25,6 +27,12 @@ const userSlice = createSlice({
     setSelectedUser: (state, action) => {
       state.selectedUser = action.payload;
     },
+    setFollowers: (state, action) => {
+      state.followers = action.payload;
+    },
+    setFollowing: (state, action) => {
+      state.following = action.payload;
+    },
   },
 });
 
@@ -33,5 +41,7 @@ export const {
   setSuggestedUsers,
   setUserProfile,
   setSelectedUser,
+  setFollowers,
+  setFollowing,
 } = userSlice.actions;
 export default userSlice.reducer;

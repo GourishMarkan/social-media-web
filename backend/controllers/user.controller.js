@@ -229,6 +229,7 @@ export const followorUnfollowUser = async (req, res) => {
     const user_id = req.user_id; // id of the user who is following or unfollowing
     const target_id = req.params.id; // id of the user whom  to follow or unfollow
     // checking if user is trying to follow himself
+    // console.log("user id and target id is ", user_id, target_id);
     if (user_id === target_id) {
       return res.status(400).json({
         success: false,
@@ -278,10 +279,9 @@ export const followorUnfollowUser = async (req, res) => {
 
 export const getMyFollowers = async (req, res) => {
   try {
-    const users = await User.findById(req.user_id).populate(
-      "followers",
-      "username"
-    );
+    const users = await User.find({ _id: req.user_id })
+      .populate("followers")
+      .populate("username");
     if (!users) {
       return res.status(404).json({
         success: false,
@@ -290,7 +290,7 @@ export const getMyFollowers = async (req, res) => {
     }
     res.status(200).json({
       success: true,
-      users: users.followers,
+      users: users,
     });
   } catch (error) {
     console.error(error);
@@ -303,10 +303,11 @@ export const getMyFollowers = async (req, res) => {
 
 export const getMyFollowing = async (req, res) => {
   try {
-    const users = await User.findById(req.user_id).populate(
-      "following",
-      "username"
-    );
+    const users = await User.find({ _id: req.user_id })
+      .populate("following")
+      .populate("username")
+      .select("username profilePicture");
+    console.log("users are ", users);
     if (!users) {
       return res.status(404).json({
         success: false,
@@ -315,7 +316,7 @@ export const getMyFollowing = async (req, res) => {
     }
     res.status(200).json({
       success: true,
-      users: users.following,
+      users,
     });
   } catch (error) {
     return res.status(401).json({

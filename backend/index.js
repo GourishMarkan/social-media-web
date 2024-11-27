@@ -11,7 +11,7 @@ dotenv.config({ path: "./config/.env" });
 const port = process.env.PORT || 3000;
 const corsOptions = {
   origin: [process.env.FRONTEND_URL],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  // methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
 

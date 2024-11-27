@@ -18,8 +18,10 @@ import axios from "axios";
 import CommentDialog from "./CommentDialog";
 import { setPosts, setSelectedPost } from "@/store/slices/postSlice";
 import { Badge } from "./ui/badge";
+// import useFollowOrUnfollow from "@/hooks/useFollowOrUnfollow";
+import { setFollowing, setSuggestedUsers } from "@/store/slices/userSlice";
 const Post = ({ post }) => {
-  const { user } = useSelector((state) => state.auth);
+  const { user, suggestedUsers } = useSelector((state) => state.auth);
   const { posts } = useSelector((state) => state.post);
   const [liked, setLiked] = useState(post?.likes?.includes(user?._id) || false);
   const [bookmarked, setBookmarked] = useState(
@@ -31,7 +33,9 @@ const Post = ({ post }) => {
   const [comment, setComment] = useState(post?.comments || []);
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
-
+  const [followed, setFollowed] = useState(
+    post?.author?.followers?.includes(user._id)
+  );
   const deletePostHandler = async () => {
     try {
       const res = await axios.delete(`${BASE_URL}/post/delete/${post?._id}`, {
@@ -132,10 +136,28 @@ const Post = ({ post }) => {
       toast.error(error.res.data.message || "An error occured");
     }
   };
+  const FollowOrUnFollow = async (id) => {
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/user/followOrUnfollow/${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        dispatch(setFollowing(res.data.following));
+        dispatch(setSuggestedUsers(res.data.suggestedUsers));
+        setFollowed(!followed);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="my-8 w-full max-w-sm mx-auto shadow-lg ">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-3">
           <Avatar className="mx-1">
             <AvatarImage
               src={post?.author?.profilePicture?.url}
@@ -143,10 +165,19 @@ const Post = ({ post }) => {
             />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center  mb-3">
             <h1>{post?.author?.username}</h1>
-            {user?._id === post?.author?._id && (
+            {user?._id === post?.author?._id ? (
               <Badge variant="secondary">Author</Badge>
+            ) : (
+              <span
+                onClick={() => {
+                  FollowOrUnFollow(post?.author?._id);
+                }}
+                className="cursor-pointer text-[#3BADF8] font-bold ml-2"
+              >
+                {followed ? "follow" : "following"}
+              </span>
             )}
           </div>
         </div>
@@ -155,14 +186,14 @@ const Post = ({ post }) => {
             <MoreHorizontal className="cursor-pointer" />
           </DialogTrigger>
           <DialogContent className="flex flex-col items-center text-sm text-center">
-            {post?.author?._id != user?._id && (
+            {/* {post?.author?._id != user?._id && (
               <Button
                 variant="ghost"
                 className="cursor-pointer w-fit text-[#ED4956] font-bold"
               >
                 Unfollow
               </Button>
-            )}
+            )} */}
 
             <Button variant="ghost" className="cursor-pointer w-fit">
               Add to favorites

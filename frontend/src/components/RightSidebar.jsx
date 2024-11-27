@@ -6,6 +6,7 @@ import SuggestedUsers from "./SuggestedUsers";
 
 const RightSidebar = () => {
   const { user } = useSelector((state) => state.auth);
+
   return (
     <div className="w-10 md:w-fit my-10 pr-32">
       <div className="flex items-center gap-2">
@@ -22,7 +23,7 @@ const RightSidebar = () => {
           </h1>
         </div>
       </div>
-      <SuggestedUsers />
+      {/* <SuggestedUsers /> */}
     </div>
   );
 };
