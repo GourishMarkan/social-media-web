@@ -176,7 +176,7 @@ const Post = ({ post }) => {
                 }}
                 className="cursor-pointer text-[#3BADF8] font-bold ml-2"
               >
-                {followed ? "follow" : "following"}
+                {followed ? "following" : "follow"}
               </span>
             )}
           </div>

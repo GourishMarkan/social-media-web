@@ -303,11 +303,10 @@ export const getMyFollowers = async (req, res) => {
 
 export const getMyFollowing = async (req, res) => {
   try {
-    const users = await User.find({ _id: req.user_id })
-      .populate("following")
-      .populate("username")
-      .select("username profilePicture");
-    console.log("users are ", users);
+    const users = await User.find({ _id: req.user_id }).populate("following");
+    // .populate("username")
+    // .select("username profilePicture");
+    console.log("users are ", users.following);
     if (!users) {
       return res.status(404).json({
         success: false,
@@ -316,7 +315,7 @@ export const getMyFollowing = async (req, res) => {
     }
     res.status(200).json({
       success: true,
-      users,
+      users: users.following,
     });
   } catch (error) {
     return res.status(401).json({

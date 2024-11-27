@@ -23,7 +23,7 @@ const RightSidebar = () => {
           </h1>
         </div>
       </div>
-      {/* <SuggestedUsers /> */}
+      <SuggestedUsers />
     </div>
   );
 };
