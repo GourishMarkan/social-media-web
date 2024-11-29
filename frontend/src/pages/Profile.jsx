@@ -1,17 +1,21 @@
+import AllFollowingData from "@/components/AllFollowingData";
 import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import useGetUserProfile from "@/hooks/useGetUserProfile";
 // import { AvatarFallback } from "@radix-ui/react-avatar";
-import { AtSign, Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import AllFollowersData from "@/components/AllFollowersData";
 
 const Profile = () => {
   const { id } = useParams();
   useGetUserProfile({ id });
   const [activeTab, setActiveTab] = useState("posts");
+  const [open, setOpen] = useState(false);
+  const [openFollower, setOpenFollower] = useState(false);
   const { userProfile, user } = useSelector((store) => store.auth);
   console.log(userProfile);
   const isLoggedInUserProfile = user?._id === userProfile?._id;
@@ -20,7 +24,7 @@ const Profile = () => {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
-
+  // const navigate = useNavigate();
   const displayedPost =
     activeTab === "posts" ? userProfile?.posts : userProfile?.bookMarks;
   return (
@@ -79,18 +83,26 @@ const Profile = () => {
                   </span>
                   posts
                 </p>
-                <p>
+                <p onClick={() => setOpenFollower(true)}>
                   <span className="font-semibold mr-1">
                     {userProfile?.followers.length}
                   </span>
                   followers
                 </p>
-                <p>
+                <AllFollowersData
+                  open={openFollower}
+                  setOpen={setOpenFollower}
+                  id={id}
+                />
+                <p onClick={() => setOpen(true)}>
+                  {/* <Link to="/profile/Following"> */}
                   <span className="font-semibold mr-1">
                     {userProfile?.following.length}
                   </span>
                   following
+                  {/* </Link> */}
                 </p>
+                <AllFollowingData open={open} setOpen={setOpen} id={id} />
               </div>
               <div className="flex flex-col gap-1">
                 <span className="font-semibold">
@@ -155,6 +167,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      {/* <AllFollowingData open={open} setOpen={setOpen} /> */}
     </div>
   );
 };

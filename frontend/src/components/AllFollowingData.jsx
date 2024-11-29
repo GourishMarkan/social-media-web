@@ -1,98 +1,119 @@
-import React from "react";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "./ui/dialog";
+// import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Search } from "lucide-react";
 import { Button } from "./ui/button";
+// import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import axios from "axios";
 
-const AllFollowingData = ({ open, setOpen }) => {
-  const { followingData, setFollowingData } = useState([
-    {
-      username: "",
-      profilePic: "",
-      _id: "",
-    },
-  ]);
-  useEffect(() => {
-    const getFollowingData = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/user/getMyFollowing`, {
-          withCredentials: true,
-        });
-        if (res.data.success) {
-          setFollowingData(res.data.users);
-        }
-      } catch (error) {
-        console.log(error);
+const AllFollowingData = ({ open, setOpen, id }) => {
+  const [followingUser, setFollowingData] = useState([]);
+  //   {
+  //     username: "",
+  //     profilePic: {
+  //       public_id: "",
+  //       url: "",
+  //     },
+  //     _id: "",
+  //   },
+  // ]);
+  const handleFollowingData = (data) => {
+    setFollowingData(data);
+  };
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  // const { user } = useSelector((state) => state.auth);
+  const fetchAllFollowingData = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/user/myFollowing/${id}`, {
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        handleFollowingData(res.data.user);
       }
-    };
-    getFollowingData();
-  }, []);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to fetch following data");
+    }
+  };
+
+  const [input, setInput] = useState("");
+  useEffect(() => {
+    if (open) fetchAllFollowingData();
+  }, [open]);
   return (
     <Dialog open={open}>
       <DialogContent
         onInteractOutside={() => setOpen(false)}
-        className="max-w-5xl p-0 flex flex-col "
+        className="max-w-xl p-0 flex flex-col overflow-y-auto overflow-x-scroll"
       >
         <div className="flex flex-1">
           <div className="w-full flex flex-col justify-between">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex gap-3 items-center">
-                {/* link to my profile */}
-                <Link>
-                  <Avatar>
-                    <AvatarImage
-                      // src={selectedPost?.author?.profilePicture?.url}
-                      alt="post_image"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                </Link>
-                <div className="">
-                  <Link className="font-semibold text-xs">
-                    {selectedPost?.author?.username}
-                  </Link>
-                </div>
-              </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <MoreHorizontal className="cursor-pointer" />
-                </DialogTrigger>
-                <DialogContent className="flex flex-col items-center text-sm text-center">
-                  <div className="flex flex-col items-center text-sm text-ceneter">
-                    <div className="cursor-pointer w-full font-bold text-[#ED4956]">
-                      Unfollow
-                    </div>
-                  </div>
-                  <div className="cursor-pointer w-full ">Add to favorites</div>
-                </DialogContent>
-              </Dialog>
-            </div>
-            <hr />
-            {/* <div className="flex-1 overflow-y-auto max-h-96 p-4">
-            comments
-            {comment.map((comment) => (
-              <Comment key={comment._id} comment={comment} />
-            ))}
-            comments
-          </div> */}
             <div className="p-4">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-1 items-center gap-2">
                 <input
                   type="text"
-                  value={text}
-                  onChange={changeEventHandler}
-                  placeholder="Add a comment ... "
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="search a user ... "
                   className="w-full rounded outline-none border text-sm p-2 border-gray-300  "
                 />
                 <Button
-                  disabled={!text.trim()}
-                  onClick={sendMessageHandler}
+                  // disabled={!text.trim()}
+                  // onClick={sendMessageHandler}
                   variant="outline"
                 >
-                  Send
+                  <Search />
                 </Button>
               </div>
+            </div>
+            <hr />
+            <div className="">
+              {followingUser.map((user, index) => (
+                <div
+                  className="flex  items-center justify-between gap-2 p-4"
+                  key={user._id || index}
+                >
+                  {/* <img src={user.profilePicture.url} alt="" /> */}
+                  <div className="flex gap-1 items-center">
+                    <Avatar>
+                      <AvatarImage
+                        src={user.profilePicture.url}
+                        alt="post_image"
+                      />
+                      <AvatarFallback>
+                        {user.username.slice(0, 2)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <h4>{user.username}</h4>
+                  </div>
+                  {/* <Dialog open={open} onOpenChange={handleChildDialogClose}> */}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        // onClick={() => setChildDialogOpen(true)}
+                      >
+                        Following
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent
+                      // onInteractOutside={() => setChildDialogOpen(false)}
+                      className="flex flex-col items-center text-sm text-center"
+                    >
+                      <div className="cursor-pointer flex justify-center">
+                        <Button variant="outline">Unfollow</Button>
+                      </div>
+                      <div className="cursor-pointer flex justify-center">
+                        <DialogClose asChild>
+                          <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -102,12 +123,3 @@ const AllFollowingData = ({ open, setOpen }) => {
 };
 
 export default AllFollowingData;
-
-// <div>
-//   {followingData.map((user, index) => (
-//     <div key={user._id || index}>
-//       <img src={user.profilePic} alt="" />
-//       <h4>{user.username}</h4>
-//     </div>
-//   ))}
-// </div>

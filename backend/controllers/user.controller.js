@@ -281,8 +281,9 @@ export const followorUnfollowUser = async (req, res) => {
 };
 
 export const getMyFollowers = async (req, res) => {
+  const { id } = req.params;
   try {
-    const user = await User.findById(req.user_id).populate(
+    const user = await User.findById(id).populate(
       "followers",
       "username profilePicture id"
     );
@@ -308,8 +309,9 @@ export const getMyFollowers = async (req, res) => {
 };
 
 export const getMyFollowing = async (req, res) => {
+  const { id } = req.params;
   try {
-    const user = await User.findById(req.user_id).populate(
+    const user = await User.findById(id).populate(
       "following",
       "username profilePicture id"
     );

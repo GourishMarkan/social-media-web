@@ -26,6 +26,6 @@ router.put(
   editProfile
 );
 router.post("/followOrUnfollow/:id", verifyJwtToken, followorUnfollowUser);
-router.get("/myFollowers", verifyJwtToken, getMyFollowers);
-router.get("/myFollowing", verifyJwtToken, getMyFollowing);
+router.get("/myFollowers/:id", verifyJwtToken, getMyFollowers);
+router.get("/myFollowing/:id", verifyJwtToken, getMyFollowing);
 export default router;

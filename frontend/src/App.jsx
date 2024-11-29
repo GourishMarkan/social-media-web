@@ -21,6 +21,7 @@ import {
   setMessageNotifications,
 } from "./store/slices/rtnSlice";
 import ProtectedRoute from "./components/ProtectedRoute";
+// import AllFollowingData from "./components/AllFollowingData";
 // import { Toast } from "react-toastify/dist/components";
 const router = createBrowserRouter([
   {
@@ -64,6 +65,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      // {
+      //   path: "/profile/Following",
+      //   element: (
+      //     <ProtectedRoute>
+      //       <AllFollowingData />
+      //     </ProtectedRoute>
+      //   ),
+      // },
     ],
   },
   {
