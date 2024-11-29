@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar } from "./ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
@@ -19,9 +19,9 @@ import CommentDialog from "./CommentDialog";
 import { setPosts, setSelectedPost } from "@/store/slices/postSlice";
 import { Badge } from "./ui/badge";
 // import useFollowOrUnfollow from "@/hooks/useFollowOrUnfollow";
-import { setFollowing, setSuggestedUsers } from "@/store/slices/userSlice";
+import { setUserProfile } from "@/store/slices/userSlice";
 const Post = ({ post }) => {
-  const { user, suggestedUsers } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const { posts } = useSelector((state) => state.post);
   const [liked, setLiked] = useState(post?.likes?.includes(user?._id) || false);
   const [bookmarked, setBookmarked] = useState(
@@ -31,11 +31,13 @@ const Post = ({ post }) => {
   const [open, setOpen] = useState(false);
   const [postLike, setPostLike] = useState(post?.likes?.length || 0);
   const [comment, setComment] = useState(post?.comments || []);
+
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
-  const [followed, setFollowed] = useState(
-    post?.author?.followers?.includes(user._id)
+  const [following, setFollowed] = useState(
+    user.following?.includes(post?.author?._id)
   );
+
   const deletePostHandler = async () => {
     try {
       const res = await axios.delete(`${BASE_URL}/post/delete/${post?._id}`, {
@@ -146,14 +148,53 @@ const Post = ({ post }) => {
         }
       );
       if (res.data.success) {
-        dispatch(setFollowing(res.data.following));
-        dispatch(setSuggestedUsers(res.data.suggestedUsers));
-        setFollowed(!followed);
+        setFollowed(!following);
+        // const updatedPosts = posts.map((p) => {
+        //   if (p.author._id === id) {
+        //     const followersData = [...p.author.followers, res.data.following];
+        //     return {
+        //       ...p,
+        //       followers: followed
+        //         ? p.author.followers.filter((id) => id !== user._id)
+        //         : [...p.author.followers, user._id],
+        //     };
+        //   }
+        // });
+        if (res.data.action == "follow_User") {
+          const updatedUserFollowing = [...user.following, id];
+          // to Update User Profile to add followers in it
+          const updatedUser = {
+            ...user,
+            following: updatedUserFollowing,
+          };
+          dispatch(setUserProfile(updatedUser));
+          toast.success("Followed User");
+        }
+        // dispatch(setPosts(updatedPosts));..
+        if (res.data.action == "unFollow_User") {
+          // to remove the following
+          const updatedUserFollowing = user.following.filter((p) => p !== id);
+          console.log("updatedUserFollowing to unfollow", updatedUserFollowing);
+          const updatedUser = {
+            ...user,
+            following: updatedUserFollowing,
+          };
+          dispatch(setUserProfile(updatedUser));
+          toast.success("UnFollowed USer");
+        }
+
+        // dispatch(setSuggestedUsers(res.data.suggestedUsers));
       }
     } catch (error) {
       console.log(error);
     }
   };
+  useEffect(() => {
+    if (user && post?.author) {
+      setFollowed(user.following?.includes(post?.author?._id));
+    }
+    // console.log("user following", followed);
+  }, [user, post]);
   return (
     <div className="my-8 w-full max-w-sm mx-auto shadow-lg ">
       <div className="flex items-center justify-between gap-2">
@@ -176,7 +217,7 @@ const Post = ({ post }) => {
                 }}
                 className="cursor-pointer text-[#3BADF8] font-bold ml-2"
               >
-                {followed ? "following" : "follow"}
+                {following ? "following" : "follow"}
               </span>
             )}
           </div>

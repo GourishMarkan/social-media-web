@@ -1,65 +1,19 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { Avatar } from "./ui/avatar";
-import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { useState } from "react";
-import axios from "axios";
+
+import SuggestedUser from "./SuggestedUser";
 
 const SuggestedUsers = () => {
-  const { user, suggestedUsers, following } = useSelector(
-    (state) => state.auth
-  );
-  const [followed, setFollowed] = useState(following.includes(user._id));
-  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
-  // const followOrUnfollowUser = async (id) => {
-  //   try {
-  //     const res = await axios.post(`${BASE_URL}/user/followOrUnfollow/${id}`, {
-  //       withCredentials: true,
-  //     });
-  //     if (res.data.success) {
-  //       setFollowed(!followed);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const { suggestedUsers } = useSelector((state) => state.auth);
+
   return (
     <div className="my-10">
       <div className="flex items-center justify-between text-sm">
         <h1 className="font-semibold text-gray-600">Suggested for you</h1>
         <span className="font-meduim cursor-pointer">See All</span>
       </div>
-      {suggestedUsers?.map((user) => {
-        return (
-          <div
-            key={user?._id}
-            className="flex items-center justify-between my-5 gap-2"
-          >
-            <div className="flex items-center gap-2">
-              <Link to={`/profile/${user?._id}`}>
-                <Avatar>
-                  <AvatarImage
-                    src={user?.profilePicture?.url}
-                    alt="profilePic"
-                  />
-                  <AvatarFallback>{user?.username.slice(0, 2)}</AvatarFallback>
-                </Avatar>
-              </Link>
-              <div>
-                <h1 className="font-semibold text-sm mb-4">
-                  <Link to={`/profile/${user._id}`}>{user?.username}</Link>
-                </h1>
-              </div>
-            </div>
-            <button
-              className="font-bold text-[#3BADF8] text-xs cursor-pointer hover:text-[#3495d6] mb-3"
-              onClick={() => followOrUnfollowUser(user._id)}
-            >
-              {followed ? "Following" : "Follow"}
-            </button>
-          </div>
-        );
-      })}
+      {suggestedUsers?.map((suggestedUser) => (
+        <SuggestedUser key={suggestedUser?._id} suggestedUser={suggestedUser} />
+      ))}
     </div>
   );
 };

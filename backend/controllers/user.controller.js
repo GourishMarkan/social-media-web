@@ -256,6 +256,7 @@ export const followorUnfollowUser = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "User unfollowed successfully",
+        action: "unfollow_User",
       });
     } else {
       // to follow the user
@@ -266,6 +267,8 @@ export const followorUnfollowUser = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "User followed successfully",
+        // followingUser: target_id,
+        action: "follow_User",
       });
     }
   } catch (error) {
