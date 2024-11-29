@@ -54,7 +54,6 @@ const SuggestedUser = ({ suggestedUser }) => {
         }
       );
       if (res.data.success) {
-        setFollowed(!followed);
         // const updatedPosts = posts.map((p) => {
         //   if (p.author._id === id) {
         //     const followersData = [...p.author.followers, res.data.following];
@@ -66,7 +65,8 @@ const SuggestedUser = ({ suggestedUser }) => {
         //     };
         //   }
         // });
-        if (res.data.action == "follow_User") {
+        if (res.data.action === "follow_User") {
+          console.log("user following", user.following);
           const updatedUserFollowing = [...user.following, id];
           // to Update User Profile to add followers in it
           const updatedUser = {
@@ -74,7 +74,9 @@ const SuggestedUser = ({ suggestedUser }) => {
             following: updatedUserFollowing,
           };
           dispatch(setUserProfile(updatedUser));
+          console.log("user following", user);
           toast.success("Followed User");
+          setFollowed(!followed);
         }
         // dispatch(setPosts(updatedPosts));..
         if (res.data.action == "unFollow_User") {
@@ -86,7 +88,9 @@ const SuggestedUser = ({ suggestedUser }) => {
             following: updatedUserFollowing,
           };
           dispatch(setUserProfile(updatedUser));
+          console.log("user unfollowing", user);
           toast.success("UnFollowed USer");
+          setFollowed(!followed);
         }
 
         // dispatch(setSuggestedUsers(res.data.suggestedUsers));

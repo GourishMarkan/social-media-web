@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-
+import bodyParser from "body-parser";
 import connectDB from "./utils/db.js";
 import { app, server } from "./socket/socket.js";
 dotenv.config({ path: "./config/.env" });
@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
-
+app.use(bodyParser.json());
 // routes--
 import userRouter from "./routes/user.route.js";
 import postRouter from "./routes/post.route.js";

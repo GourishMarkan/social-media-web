@@ -282,18 +282,21 @@ export const followorUnfollowUser = async (req, res) => {
 
 export const getMyFollowers = async (req, res) => {
   try {
-    const users = await User.find({ _id: req.user_id })
-      .populate("followers")
-      .populate("username");
-    if (!users) {
+    const user = await User.findById(req.user_id).populate(
+      "followers",
+      "username profilePicture id"
+    );
+    // .populate("username");
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "No followers found",
       });
     }
+    const userData = user.followers;
     res.status(200).json({
       success: true,
-      users: users,
+      user: userData,
     });
   } catch (error) {
     console.error(error);
@@ -306,19 +309,24 @@ export const getMyFollowers = async (req, res) => {
 
 export const getMyFollowing = async (req, res) => {
   try {
-    const users = await User.find({ _id: req.user_id }).populate("following");
+    const user = await User.findById(req.user_id).populate(
+      "following",
+      "username profilePicture id"
+    );
+    // .select("username profilePicture id");
     // .populate("username")
     // .select("username profilePicture");
-    console.log("users are ", users.following);
-    if (!users) {
+    console.log("users are ", user);
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "No following found",
       });
     }
+    const user1 = user.following;
     res.status(200).json({
       success: true,
-      users: users.following,
+      user: user1,
     });
   } catch (error) {
     return res.status(401).json({

@@ -21,7 +21,7 @@ const useGetUserProfile = ({ id }) => {
       }
     };
     fetchUserProfile();
-  }, [id]);
+  }, [id, setUserProfile]);
 };
 
 export default useGetUserProfile;

@@ -80,13 +80,13 @@ const Profile = () => {
                   posts
                 </p>
                 <p>
-                  <span className="font-semibold">
+                  <span className="font-semibold mr-1">
                     {userProfile?.followers.length}
                   </span>
                   followers
                 </p>
                 <p>
-                  <span className="font-semibold">
+                  <span className="font-semibold mr-1">
                     {userProfile?.following.length}
                   </span>
                   following

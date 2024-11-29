@@ -35,7 +35,7 @@ const Post = ({ post }) => {
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const [following, setFollowed] = useState(
-    user.following?.includes(post?.author?._id)
+    user?.following?.includes(post?.author?._id)
   );
 
   const deletePostHandler = async () => {
