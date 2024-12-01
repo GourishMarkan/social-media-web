@@ -31,6 +31,7 @@ const AllFollowingData = ({ open, setOpen, id }) => {
       });
       if (res.data.success) {
         handleFollowingData(res.data.user);
+        toast.success("Following data fetched successfully");
       }
     } catch (error) {
       console.log(error);

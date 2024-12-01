@@ -54,6 +54,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["male", "female", "others"],
     },
+    stories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Story",
+      },
+    ],
   },
   { timestamps: true }
 );

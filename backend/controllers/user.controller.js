@@ -3,6 +3,7 @@ import { Post } from "../models/post.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 import { sendToken } from "../utils/jwtToken.js";
+import bcrypt from "bcryptjs";
 export const register = async (req, res) => {
   const { username, password, email, bio, gender } = req.body;
   console.log("", username, password, email, bio, gender);
@@ -63,14 +64,18 @@ export const login = async (req, res) => {
         message: "Please enter email and password",
       });
     }
-    let user = await User.findOne({ email }).select("+password");
+    let user = await User.findOne({ email })
+      .populate({ path: "posts", createdAt: -1 })
+      .populate("stories")
+      .select("+password");
     if (!user) {
       return res.status(401).json({
         success: false,
         message: "User not found",
       });
     }
-    const isPasswordMatch = await user.comparePassword(password);
+    // const isPasswordMatch = await user.comparePassword(password);
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return res.status(401).json({
         success: false,
@@ -78,12 +83,18 @@ export const login = async (req, res) => {
       });
     }
     // populating the posts-
-    const populatedPosts = await Promise.all(
-      user.posts.map(async (post_id) => {
-        const post = await Post.findById(post_id);
-        return post.author.equals(user._id) ? post : null;
-      })
-    );
+    // const populatedPosts = await Promise.all(
+    //   user.posts.map(async (post_id) => {
+    //     const post = await Post.findById(post_id);
+    //     return post.author.equals(user._id) ? post : null;
+    //   })
+    // );
+    const populatedPosts = user.posts;
+    // console.log("populated posts are ", populatedPosts);
+    // populating the stories-
+    // const populatedStories=await Promise.all({
+    //   user.stories.map
+    // })
     user = {
       _id: user._id,
       username: user.username,
@@ -93,7 +104,9 @@ export const login = async (req, res) => {
       followers: user.followers,
       following: user.following,
       posts: populatedPosts,
+      stories: user.stories,
     };
+    console.log("user is ", user);
     sendToken(user, 200, res, "Login successful");
     // const token=
   } catch (error) {

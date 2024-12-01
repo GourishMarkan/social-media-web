@@ -25,9 +25,11 @@ app.use(bodyParser.json());
 import userRouter from "./routes/user.route.js";
 import postRouter from "./routes/post.route.js";
 import messageRouter from "./routes/message.route.js";
+import storyRouter from "./routes/story.route.js";
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/user/story", storyRouter);
 // app.listen(port, () => {
 //   console.log("Server is running on port ", port);
 // });
