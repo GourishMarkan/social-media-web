@@ -19,12 +19,15 @@ const storySchema = new mongoose.Schema(
     },
     expiresAt: {
       type: Date,
-      // required: true,
+      required: true,
     },
   },
   {
     timestamps: true,
-    expireAfterSeconds: 86400,
+    // expireAfterSeconds: 86400,
   }
 );
+
+// TTL Index to expire documents 24 hours after `expiresAt`
+storySchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 export const Story = mongoose.model("Story", storySchema);

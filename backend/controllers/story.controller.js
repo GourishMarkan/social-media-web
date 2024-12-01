@@ -49,6 +49,7 @@ export const createStory = async (req, res) => {
         public_id: cloudinaryRes.public_id,
         url: cloudinaryRes.secure_url,
       },
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
     const story = await Story.create(storyData);
     user.stories.push(story._id);
@@ -72,10 +73,14 @@ export const createStory = async (req, res) => {
 
 export const getAllStories = async (req, res) => {
   try {
-    const stories = await Story.find().populate({
-      path: "author",
-      select: "-password",
-    });
+    const stories = await Story.find({
+      expiresAt: { $gt: new Date() },
+    })
+      .populate({
+        path: "author",
+        select: "-password",
+      })
+      .sort({ createdAt: -1 });
     if (!stories) {
       return res.status(404).json({
         success: false,
@@ -92,5 +97,27 @@ export const getAllStories = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+
+export const getMyStories = async (req, res) => {
+  try {
+    const authorId = req.user_id;
+    const stories = await Story.find({
+      author: authorId,
+      expiresAt: { $gt: new Date() },
+    }).sort({ createdAt: -1 });
+    if (!stories) {
+      return res.status(404).json({
+        success: false,
+        message: "No stories found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      stories,
+    });
+  } catch (error) {
+    console.log(error);
   }
 };
