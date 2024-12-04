@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { setPosts } from "@/store/slices/postSlice";
+import { setUserProfile } from "@/store/slices/userSlice";
 const useGetAllPost = () => {
   const dispatch = useDispatch();
 
@@ -22,7 +23,7 @@ const useGetAllPost = () => {
       }
     };
     fetchAllPost();
-  }, []);
+  }, [setUserProfile]);
 };
 
 export default useGetAllPost;

@@ -7,6 +7,7 @@ import {
   Search,
   TrendingUp,
 } from "lucide-react";
+
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 // import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { Button } from "./ui/button";
 import { clearLikeNotifications } from "../store/slices/rtnSlice";
+import { FaRegPlusSquare } from "react-icons/fa";
+import AddStory from "./AddStory";
 const LeftSideBar = () => {
   const navigate = useNavigate();
   const { user } = useSelector((store) => store.auth);
@@ -29,6 +32,7 @@ const LeftSideBar = () => {
   // console.log("clearLIkeNotifications", clearLikeNotifications);
   console.log("messageNotifications", messageNotifications);
   const [open, setOpen] = useState(false);
+  const [addStoryOpen, setAddStoryOpen] = useState(false);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const dispatch = useDispatch();
   const [isPopOverOpen, setPopOverOpen] = useState(false);
@@ -78,6 +82,8 @@ const LeftSideBar = () => {
       navigate("/");
     } else if (textType === "Messages") {
       navigate("/chat");
+    } else if (textType === "Story") {
+      setAddStoryOpen(true);
     }
   };
   const sidebarItems = [
@@ -88,6 +94,11 @@ const LeftSideBar = () => {
     {
       icons: <Search />,
       text: "Search",
+    },
+    {
+      // icons: <GoPlusCircle className="" />,
+      icons: <FaRegPlusSquare className="h-6 w-6" />,
+      text: "Story",
     },
     {
       icons: <TrendingUp />,
@@ -186,6 +197,7 @@ const LeftSideBar = () => {
         </div>
       </div>
       <CreatePost open={open} setOpen={setOpen} />
+      <AddStory open={addStoryOpen} setOpen={setAddStoryOpen} />
     </div>
   );
 };

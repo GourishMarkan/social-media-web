@@ -6,6 +6,7 @@ import postSlice from "./slices/postSlice";
 import socketSlice from "./slices/socketSlice";
 import chatSlice from "./slices/chatSlice";
 import rtn from "./slices/rtnSlice";
+import storySlice from "./slices/storySlice";
 const persistConfig = {
   key: "root",
   version: 1,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   socketio: socketSlice,
   chat: chatSlice,
   realTimeNotifications: rtn,
+  story: storySlice,
 });
 // creating a persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);

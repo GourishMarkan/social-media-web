@@ -13,6 +13,7 @@ const userSlice = createSlice({
     suggestedUsers: [],
     userProfile: null,
     selectedUser: null,
+    myStories: [],
   },
   reducers: {
     setAuthUser: (state, action) => {
@@ -33,6 +34,9 @@ const userSlice = createSlice({
     setFollowing: (state, action) => {
       state.following = action.payload;
     },
+    setMyStories: (state, action) => {
+      state.myStories = action.payload;
+    },
   },
 });
 
@@ -43,5 +47,6 @@ export const {
   setSelectedUser,
   setFollowers,
   setFollowing,
+  setMyStories,
 } = userSlice.actions;
 export default userSlice.reducer;

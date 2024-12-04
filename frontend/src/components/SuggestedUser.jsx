@@ -43,6 +43,9 @@ const SuggestedUser = ({ suggestedUser }) => {
   //   } catch (error) {
   //     console.log(error);
   //   }
+  useEffect(() => {
+    if (user) setFollowed(user?.following?.includes(suggestedUser?._id));
+  }, [followed, user, suggestedUser]);
   // };
   const FollowOrUnFollowSuggestedUser = async (id) => {
     try {
@@ -65,6 +68,7 @@ const SuggestedUser = ({ suggestedUser }) => {
         //     };
         //   }
         // });
+        setFollowed(!followed);
         if (res.data.action === "follow_User") {
           console.log("user following", user.following);
           const updatedUserFollowing = [...user.following, id];
@@ -76,7 +80,7 @@ const SuggestedUser = ({ suggestedUser }) => {
           dispatch(setUserProfile(updatedUser));
           console.log("user following", user);
           toast.success("Followed User");
-          setFollowed(!followed);
+          // setFollowed(true);
         }
         // dispatch(setPosts(updatedPosts));..
         if (res.data.action == "unFollow_User") {
@@ -90,7 +94,7 @@ const SuggestedUser = ({ suggestedUser }) => {
           dispatch(setUserProfile(updatedUser));
           console.log("user unfollowing", user);
           toast.success("UnFollowed USer");
-          setFollowed(!followed);
+          // setFollowed(false);
         }
 
         // dispatch(setSuggestedUsers(res.data.suggestedUsers));
@@ -99,9 +103,7 @@ const SuggestedUser = ({ suggestedUser }) => {
       console.log(error);
     }
   };
-  useEffect(() => {
-    if (user) setFollowed(user?.following?.includes(suggestedUser?._id));
-  }, [followed]);
+  // const follow = followed ? "Follow" : "Following";
   return (
     <div
       key={suggestedUser?._id}
@@ -122,7 +124,7 @@ const SuggestedUser = ({ suggestedUser }) => {
         <div>
           <h1 className="font-semibold text-sm mb-4">
             <Link to={`/profile/${suggestedUser?._id}`}>
-              {suggestedUser?.suggestedUsername}
+              {suggestedUser?.username}
             </Link>
           </h1>
         </div>
@@ -131,7 +133,8 @@ const SuggestedUser = ({ suggestedUser }) => {
         className="font-bold text-[#3BADF8] text-xs cursor-pointer hover:text-[#3495d6] mb-3"
         onClick={() => FollowOrUnFollowSuggestedUser(suggestedUser?._id)}
       >
-        {followed ? "Following" : "Follow"}
+        {followed ? "unFollow" : "Follow"}
+        {/* {follow} */}
       </button>
     </div>
   );

@@ -64,7 +64,7 @@ const CreatePost = ({ open, setOpen }) => {
         </DialogTitle>
         <div className="flex gap-3 items-center">
           <Avatar>
-            <AvatarImage src={user?.profilePicture} alt="img" />
+            <AvatarImage src={user?.profilePicture?.url} alt="img" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
 

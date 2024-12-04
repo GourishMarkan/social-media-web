@@ -35,7 +35,7 @@ const Post = ({ post }) => {
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const [following, setFollowed] = useState(
-    user?.following?.includes(post?.author?._id)
+    post?.author?.followers?.includes(user?._id)
   );
 
   const deletePostHandler = async () => {
@@ -167,19 +167,34 @@ const Post = ({ post }) => {
             ...user,
             following: updatedUserFollowing,
           };
+          // to update the post with the new followers
+          const updatedPostData = posts.map((p) =>
+            p.author._id === id ? { ...p, followers: [...p.followers, id] } : p
+          );
+          // const updatedPostData=posts.map((p)=>{
+          //   p._id === post._id ? { ...p, followers:  } : p
+          // })
           dispatch(setUserProfile(updatedUser));
+          dispatch(setPosts(updatedPostData));
           toast.success("Followed User");
         }
         // dispatch(setPosts(updatedPosts));..
         if (res.data.action == "unFollow_User") {
           // to remove the following
           const updatedUserFollowing = user.following.filter((p) => p !== id);
-          console.log("updatedUserFollowing to unfollow", updatedUserFollowing);
+          // console.log("updatedUserFollowing to unfollow", updatedUserFollowing);
           const updatedUser = {
             ...user,
             following: updatedUserFollowing,
           };
+          // to update the post with the new followers
+          const updatedPostData = posts.map((p) => {
+            p.author._id === id
+              ? { ...p, followers: [p.followers.filter((p) => p !== id)] }
+              : p;
+          });
           dispatch(setUserProfile(updatedUser));
+          dispatch(setPosts(updatedPostData));
           toast.success("UnFollowed USer");
         }
 
@@ -208,7 +223,7 @@ const Post = ({ post }) => {
           </Avatar>
           <div className="flex items-center  mb-3">
             <h1>{post?.author?.username}</h1>
-            {user?._id === post?.author?._id ? (
+            {user?._id == post?.author?._id ? (
               <Badge variant="secondary">Author</Badge>
             ) : (
               <span
@@ -218,6 +233,7 @@ const Post = ({ post }) => {
                 className="cursor-pointer text-[#3BADF8] font-bold ml-2"
               >
                 {following ? "following" : "follow"}
+                {/* {following} */}
               </span>
             )}
           </div>
