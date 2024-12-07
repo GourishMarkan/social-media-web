@@ -140,6 +140,8 @@ const Post = ({ post }) => {
   };
   const FollowOrUnFollow = async (id) => {
     try {
+      console.log("following", following);
+      console.log("");
       const res = await axios.post(
         `${BASE_URL}/user/followOrUnfollow/${id}`,
         {},
@@ -206,7 +208,7 @@ const Post = ({ post }) => {
   };
   useEffect(() => {
     if (user && post?.author) {
-      setFollowed(user.following?.includes(post?.author?._id));
+      setFollowed(post?.author.followers?.includes(user._id));
     }
     // console.log("user following", followed);
   }, [user, post]);

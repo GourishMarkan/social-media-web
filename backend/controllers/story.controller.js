@@ -87,9 +87,11 @@ export const getAllStories = async (req, res) => {
         message: "No stories found",
       });
     }
+    const count = stories.length;
     return res.status(200).json({
       success: true,
       stories,
+      count,
     });
   } catch (error) {
     console.log(error);

@@ -23,7 +23,7 @@ const useGetAllPost = () => {
       }
     };
     fetchAllPost();
-  }, [setUserProfile]);
+  }, [setUserProfile, setPosts]);
 };
 
 export default useGetAllPost;
