@@ -33,9 +33,12 @@ const StoryView = ({
               </span>
             </div>
             <div className=" flex justify-between items-center">
-              <Button className="-inset-5" onClick={prevStory}>
+              <button
+                className="-inset-5 p-2 bg-gray-200 rounded-full hover:bg-gray-300"
+                onClick={prevStory}
+              >
                 <FaArrowLeft />
-              </Button>
+              </button>
               <div className="flex">
                 <img
                   src={stories[selectedStory]?.image?.url}

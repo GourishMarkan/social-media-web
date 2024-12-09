@@ -34,9 +34,22 @@ const Post = ({ post }) => {
 
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
-  const [following, setFollowed] = useState(
-    post?.author?.followers?.includes(user?._id)
-  );
+  const [following, setFollowed] = useState();
+  // user?.following?.includes(post?.author?._id) ||
+  // post?.author?.followers?.includes(user?._id)
+  // user?.following?.includes(post?.author?._id)
+  // post?.author?.followers?.includes(user?._id)
+  // false
+  // post?.author?.followers?.includes(user?._id)
+  useEffect(() => {
+    if (user && post?.author) {
+      // setFollowed(post?.author.followers?.includes(user._id));
+      // console.log("user following", user?.following);
+      console.log("user following", following);
+      setFollowed(user?.following?.includes(post?.author?._id));
+    }
+    // console.log("user following", followed);
+  }, [user, post, setPosts, setUserProfile]);
 
   const deletePostHandler = async () => {
     try {
@@ -141,7 +154,7 @@ const Post = ({ post }) => {
   const FollowOrUnFollow = async (id) => {
     try {
       console.log("following", following);
-      console.log("");
+      // console.log("");
       const res = await axios.post(
         `${BASE_URL}/user/followOrUnfollow/${id}`,
         {},
@@ -150,7 +163,7 @@ const Post = ({ post }) => {
         }
       );
       if (res.data.success) {
-        setFollowed(!following);
+        // setFollowed(!following);
         // const updatedPosts = posts.map((p) => {
         //   if (p.author._id === id) {
         //     const followersData = [...p.author.followers, res.data.following];
@@ -162,7 +175,11 @@ const Post = ({ post }) => {
         //     };
         //   }
         // });
-        if (res.data.action == "follow_User") {
+        console.log(!following);
+        setFollowed(!following);
+        console.log("followed after setting", following);
+        if (res.data.action === "follow_User") {
+          console.log("checking inside follow");
           const updatedUserFollowing = [...user.following, id];
           // to Update User Profile to add followers in it
           const updatedUser = {
@@ -171,18 +188,32 @@ const Post = ({ post }) => {
           };
           // to update the post with the new followers
           const updatedPostData = posts.map((p) =>
-            p.author._id === id ? { ...p, followers: [...p.followers, id] } : p
+            p._id === post._id
+              ? {
+                  ...p,
+                  author: {
+                    ...p.author,
+                    followers: [...p.author.followers, id],
+                  },
+                  // followers: [...p.followers, id]
+                }
+              : p
           );
           // const updatedPostData=posts.map((p)=>{
           //   p._id === post._id ? { ...p, followers:  } : p
           // })
+          console.log("updatedPostData", updatedPostData);
+          console.log("before dispatch");
           dispatch(setUserProfile(updatedUser));
           dispatch(setPosts(updatedPostData));
+          console.log("after dispatch");
+          // setFollowed(true);
           toast.success("Followed User");
         }
         // dispatch(setPosts(updatedPosts));..
-        if (res.data.action == "unFollow_User") {
+        if (res.data.action === "unfollow_User") {
           // to remove the following
+          console.log("checking inside unfollow");
           const updatedUserFollowing = user.following.filter((p) => p !== id);
           // console.log("updatedUserFollowing to unfollow", updatedUserFollowing);
           const updatedUser = {
@@ -190,13 +221,40 @@ const Post = ({ post }) => {
             following: updatedUserFollowing,
           };
           // to update the post with the new followers
-          const updatedPostData = posts.map((p) => {
-            p.author._id === id
-              ? { ...p, followers: [p.followers.filter((p) => p !== id)] }
-              : p;
-          });
+          // const updatedPostData = posts.map((p) => {
+          //   // p?.author && p?.author?._id === id
+          //   p._id === post._id
+          //     ? {
+          //         ...p,
+          //         author: {
+          //           ...p.author,
+          //           followers: p.author.followers.filter((follwerId) => follwerId!== id),
+          //         },
+
+          //         // followers: [p.author.followers.filter((p) => p !== id)]
+          //       }
+          //     : p;
+          // });
+          const updatedPostData = posts.map((p) =>
+            p._id === post._id
+              ? {
+                  ...p,
+                  author: {
+                    ...p.author,
+                    followers: p.author.followers.filter(
+                      (followerId) => followerId !== id
+                    ),
+                  },
+                }
+              : p
+          );
+          console.log("before dispatch");
+          // console.log("updatedPostData", updatedPostData);
+          // console.log("updatedUser", updatedUser);
           dispatch(setUserProfile(updatedUser));
           dispatch(setPosts(updatedPostData));
+          console.log("after dispatch");
+          // setFollowed(false);
           toast.success("UnFollowed USer");
         }
 
@@ -206,12 +264,6 @@ const Post = ({ post }) => {
       console.log(error);
     }
   };
-  useEffect(() => {
-    if (user && post?.author) {
-      setFollowed(post?.author.followers?.includes(user._id));
-    }
-    // console.log("user following", followed);
-  }, [user, post]);
   return (
     <div className="my-8 w-full max-w-sm mx-auto shadow-lg ">
       <div className="flex items-center justify-between gap-2">

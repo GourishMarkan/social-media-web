@@ -5,14 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 
 import { useEffect, useState } from "react";
-import { setUserProfile } from "@/store/slices/userSlice";
+import { setUserProfile, setSuggestedUsers } from "@/store/slices/userSlice";
 import { toast } from "react-toastify";
 
 const SuggestedUser = ({ suggestedUser }) => {
-  const { user } = useSelector((state) => state.auth);
-  const [followed, setFollowed] = useState(
-    user?.following?.includes(suggestedUser?._id)
-  );
+  const { user, suggestedUsers } = useSelector((state) => state.auth);
+  const [followed, setFollowed] = useState();
+  // console.log(suggestedUser);
+  // console.log(suggestedUser?.followers.includes(user?._id));
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   // const followOrUnfollowsuggestedUser = async (id) => {
@@ -45,7 +45,7 @@ const SuggestedUser = ({ suggestedUser }) => {
   //   }
   useEffect(() => {
     if (user) setFollowed(user?.following?.includes(suggestedUser?._id));
-  }, [followed, user, suggestedUser]);
+  }, [user, suggestedUser]);
   // };
   const FollowOrUnFollowSuggestedUser = async (id) => {
     try {
@@ -69,6 +69,7 @@ const SuggestedUser = ({ suggestedUser }) => {
         //   }
         // });
         setFollowed(!followed);
+        console.log("followed", followed);
         if (res.data.action === "follow_User") {
           console.log("user following", user.following);
           const updatedUserFollowing = [...user.following, id];
@@ -77,13 +78,26 @@ const SuggestedUser = ({ suggestedUser }) => {
             ...user,
             following: updatedUserFollowing,
           };
+          // const updatedSuggestedUserFollowers = suggestedUser.followers.push(
+          //   user._id
+          // );
+          const updatedSuggestedUser = suggestedUsers.map((suggestedUser1) => {
+            if (suggestedUser1._id === suggestedUser?._id) {
+              suggestedUser1 = {
+                ...suggestedUser1,
+                followers: suggestedUser1.followers.push(user._id),
+              };
+            }
+          });
+          console.log("dispatching");
           dispatch(setUserProfile(updatedUser));
+          dispatch(setSuggestedUsers(updatedSuggestedUser));
           console.log("user following", user);
           toast.success("Followed User");
           // setFollowed(true);
         }
         // dispatch(setPosts(updatedPosts));..
-        if (res.data.action == "unFollow_User") {
+        if (res.data.action == "unfollow_User") {
           // to remove the following
           const updatedUserFollowing = user.following.filter((p) => p !== id);
           console.log("updatedUserFollowing to unfollow", updatedUserFollowing);
@@ -91,12 +105,25 @@ const SuggestedUser = ({ suggestedUser }) => {
             ...user,
             following: updatedUserFollowing,
           };
+          // const updatedSuggestedUserFollowers = suggestedUser.followers.filter(
+          //   (p) => p !== user._id
+          // );
+          const updatedSuggestedUser = suggestedUsers.map((suggestedUser1) => {
+            if (suggestedUser1._id === suggestedUser?._id) {
+              return (suggestedUser1 = {
+                ...suggestedUser1,
+                followers: suggestedUser1.followers.filter((p) => p !== id),
+              });
+            }
+            return suggestedUser1;
+          });
           dispatch(setUserProfile(updatedUser));
+          dispatch(setSuggestedUsers(updatedSuggestedUser));
           console.log("user unfollowing", user);
           toast.success("UnFollowed USer");
           // setFollowed(false);
         }
-
+        // toast.success("done following");
         // dispatch(setSuggestedUsers(res.data.suggestedUsers));
       }
     } catch (error) {
@@ -133,7 +160,7 @@ const SuggestedUser = ({ suggestedUser }) => {
         className="font-bold text-[#3BADF8] text-xs cursor-pointer hover:text-[#3495d6] mb-3"
         onClick={() => FollowOrUnFollowSuggestedUser(suggestedUser?._id)}
       >
-        {followed ? "unFollow" : "Follow"}
+        {followed ? "Following" : "Follow"}
         {/* {follow} */}
       </button>
     </div>

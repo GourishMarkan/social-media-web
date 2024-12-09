@@ -6,6 +6,7 @@ const Posts = () => {
   console.log("posts are", posts);
   return (
     <div>
+      {/* <Post key={posts[1]._id} post={posts[1]} /> */}
       {Array.isArray(posts) &&
         posts?.map((post, index) => (
           <Post key={post?._id || index} post={post} />
