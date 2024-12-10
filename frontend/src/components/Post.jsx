@@ -34,22 +34,24 @@ const Post = ({ post }) => {
 
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
-  const [following, setFollowed] = useState();
+  const [following, setFollowed] = useState(
+    post?.author?.followers?.includes(user?._id) || false
+  );
   // user?.following?.includes(post?.author?._id) ||
   // post?.author?.followers?.includes(user?._id)
   // user?.following?.includes(post?.author?._id)
   // post?.author?.followers?.includes(user?._id)
   // false
   // post?.author?.followers?.includes(user?._id)
-  useEffect(() => {
-    if (user && post?.author) {
-      // setFollowed(post?.author.followers?.includes(user._id));
-      // console.log("user following", user?.following);
-      console.log("user following", following);
-      setFollowed(user?.following?.includes(post?.author?._id));
-    }
-    // console.log("user following", followed);
-  }, [user, post, setPosts, setUserProfile]);
+  // useEffect(() => {
+  //   if (user && post?.author) {
+  //     // setFollowed(post?.author.followers?.includes(user._id));
+  //     // console.log("user following", user?.following);
+  //     console.log("user following", following);
+  //     setFollowed(user?.following?.includes(post?.author?._id));
+  //   }
+  //   // console.log("user following", followed);
+  // }, [user, post]);
 
   const deletePostHandler = async () => {
     try {
