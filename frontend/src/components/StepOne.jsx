@@ -26,7 +26,7 @@ const StepOne = ({ nextStep, userDetails, handleInputChange }) => {
           <Input
             type="text"
             name="username"
-            value={userDetails.username}
+            value={userDetails?.username}
             onChange={handleInputChange}
             className="focus-visible:ring-transparent my-2"
           />
