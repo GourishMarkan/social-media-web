@@ -60,7 +60,7 @@ const Post = ({ post }) => {
       });
       if (res.data.success) {
         const updatedPosts = posts.filter(
-          (postItem) => postItem._id !== post?._id
+          (postItem) => postItem?._id !== post?._id
         );
         dispatch(setPosts(updatedPosts));
         toast.success(res.data.message);
@@ -84,12 +84,12 @@ const Post = ({ post }) => {
         setLiked(!liked);
         // updating post like /dislike
         const updatedePostData = posts.map((p) =>
-          p._id === post._id
+          p?._id === post?._id
             ? {
                 ...p,
                 likes: liked
-                  ? p.likes.filter((id) => id !== user._id)
-                  : [...p.likes, user._id],
+                  ? p.likes.filter((id) => id !== user?._id)
+                  : [...p.likes, user?._id],
               }
             : p
         );
@@ -105,7 +105,7 @@ const Post = ({ post }) => {
   const commentHandler = async () => {
     try {
       const res = await axios.post(
-        `${BASE_URL}/post/${post._id}/addComment`,
+        `${BASE_URL}/post/${post?._id}/addComment`,
         { text },
         {
           headers: {
@@ -118,7 +118,7 @@ const Post = ({ post }) => {
         const updatedCommentData = [...comment, res.data.comment];
         setComment(updatedCommentData);
         const updatedPostData = posts.map((p) =>
-          p._id === post._id ? { ...p, comments: updatedCommentData } : p
+          p?._id === post?._id ? { ...p, comments: updatedCommentData } : p
         );
         // updating the post with the new comment
         dispatch(setPosts(updatedPostData));
@@ -190,7 +190,7 @@ const Post = ({ post }) => {
           };
           // to update the post with the new followers
           const updatedPostData = posts.map((p) =>
-            p._id === post._id
+            p?._id === post?._id
               ? {
                   ...p,
                   author: {
@@ -238,7 +238,7 @@ const Post = ({ post }) => {
           //     : p;
           // });
           const updatedPostData = posts.map((p) =>
-            p._id === post._id
+            p?._id === post?._id
               ? {
                   ...p,
                   author: {
