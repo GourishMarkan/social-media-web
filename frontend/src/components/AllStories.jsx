@@ -66,7 +66,7 @@ const AllStories = () => {
     // <div className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-md ">
     <div className="flex space-x-4 items-center justify-evenly overflow-x-auto p-4 ">
       {/* <Slider {...setting}> */}
-      {stories.map((story, index) => (
+      {stories?.map((story, index) => (
         <div key={index} className="flex flex-col items-center">
           <Avatar
             onClick={() => {
